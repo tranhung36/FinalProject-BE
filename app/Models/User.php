@@ -20,11 +20,11 @@ class User extends Authenticatable
      * @var string[]
      */
     protected $fillable = [
-        'uuid',
         'first_name',
         'last_name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -35,6 +35,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+    protected $attributes = [
+        'role' => 'user',
     ];
 
     /**
@@ -48,8 +51,18 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token)
     {
-        $url = 'http://laravel.test/reset-password?token=' . $token;
+        $url = 'https://final-project-team.herokuapp.com/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
     }
 }
