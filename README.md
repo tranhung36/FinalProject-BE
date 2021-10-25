@@ -1,4 +1,4 @@
-set up:
+set up:  
 1 . vào env set up database :  
     DB_CONNECTION=mysql (loại csdl)  
     DB_HOST=127.0.0.1 (host mặc định 127.0.0.1)  
