@@ -29,7 +29,7 @@ Route::post('register/', [RegisterController::class, 'register']);
  */
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout/', [LoginController::class, 'logout']);
-    Route::resource('posts',PostController::class);
+    Route::resource('posts',PostController::class)->only(['store','update','destroy','show']);
 
 });
 
@@ -39,3 +39,5 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('forgot-password', [ResetPasswordController::class, 'forgotPassword']);
 Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 
+//public route
+Route::resource('posts',PostController::class)->only(['index']);
