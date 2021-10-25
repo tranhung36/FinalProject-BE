@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Ramsey\Uuid\Uuid;
 
 class RegisterController extends Controller
 {
@@ -17,11 +18,11 @@ class RegisterController extends Controller
         $data = $request->validated();
 
         $data['password'] = bcrypt($request->password);
-
+        $data['uuid'] = Uuid::uuid4();
         $user = User::create($data);
 
         $token = $user->createToken('LaravelAuthApp')->accessToken;
 
-        return response()->json(['token' => $token], 200);
+        return response()->json(['user' => $user, 'token' => $token], 200);
     }
 }
