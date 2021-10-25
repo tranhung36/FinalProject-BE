@@ -20,23 +20,20 @@ class PostController extends Controller
     {
         try {
             $posts = Post::paginate(5);
-            $response = [
-                'message' => 'Success',
-                'data' => [
-                    'posts' => $posts
-                ]
-            ];
-            return response($response, 200);
+            return $this->success($posts);
         } catch (\Exception $e) {
-            $response = [
-                'message' => 'Error',
-                'data' => [
-                    'error' => $e
-                ]
-            ];
-            return response($response, 500);
+            return $this->error($e);
         }
+    }
 
+    public function show($slug)
+    {
+        try {
+            $post = Post::where('slug', $slug)->first();
+            return $this->success($post);
+        } catch (\Exception $e) {
+            return $this->error($e);
+        }
     }
 
     /**
@@ -55,31 +52,14 @@ class PostController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
         try {
-            $request->validate([
-                'title' => 'required',
-                'user_id' => 'required',
-                'topic_id' => 'required'
-            ]);
             $request['slug'] = Str::slug($request['title'], '-');
             $post = Post::create($request->all());
-            $response = [
-                'message' => 'Success',
-                'data' => [
-                    'post' => $post
-                ]
-            ];
-            return response($response, 200);
+            return $this->success($post);
         } catch (\Exception $e) {
-            $response = [
-                'message' => 'Error',
-                'data' => [
-                    'error' => $e
-                ]
-            ];
-            return response($response, 500);
+            return $this->error($e);
         }
 
     }
@@ -102,26 +82,14 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePostRequest $request, $slug)
+    public function update(Request $request, $slug)
     {
         try {
             $post = Post::where('slug', $slug)->first();
             $post->update($request->all());
-            $response = [
-                'message' => 'Success',
-                'data' => [
-                    'post' => $post
-                ]
-            ];
-            return response($response, 200);
+            return $this->success($post);
         } catch (\Exception $e) {
-            $response = [
-                'message' => 'Error',
-                'data' => [
-                    'error' => $e
-                ]
-            ];
-            return response($response, 500);
+            return $this->error($e);
         }
 
     }
@@ -137,21 +105,9 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->delete();
-            $response = [
-                'message' => 'Success',
-                'data' => [
-                    'message' => 'delete successfully'
-                ]
-            ];
-            return response($response, 200);
+            return $this->success($post);
         } catch (\Exception $e) {
-            $response = [
-                'message' => 'Error',
-                'data' => [
-                    'error' => $e
-                ]
-            ];
-            return response($response, 500);
+            return $this->error($e);
         }
 
     }
