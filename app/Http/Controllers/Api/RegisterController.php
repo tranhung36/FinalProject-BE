@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Helper\ResponseData;
 
 class RegisterController extends Controller
 {
@@ -21,23 +22,8 @@ class RegisterController extends Controller
 
         $token = $user->createToken('LaravelAuthApp')->accessToken;
 
-        return response()->json(
-            [
-                'message' => 'Successfully',
-                'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'email' => $user->email,
-                        'created_at' => $user->created_at,
-                        'updated_at' => $user->updated_at,
-                        'role' => 'user'
-                    ],
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
-                ],
-                'result' => true
-            ],
-            200
-        );
+        $get_success = ResponseData::dataResponseSuccess($token, $user);
+
+        return $get_success;
     }
 }

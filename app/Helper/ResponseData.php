@@ -4,17 +4,13 @@ namespace App\Helper;
 
 class ResponseData
 {
-    public static function dataResponseSuccess($token)
+    public static function dataResponseSuccess($token, $user)
     {
         return response()->json([
             'message' => 'Successfully',
             'data' => [
                 'user' => [
-                    'id' => auth()->user()->id,
-                    'email' => auth()->user()->email,
-                    'created_at' => auth()->user()->created_at,
-                    'updated_at' => auth()->user()->updated_at,
-                    'role' => auth()->user()->role
+                    $user
                 ],
                 'access_token' => $token,
                 'token_type' => 'Bearer',

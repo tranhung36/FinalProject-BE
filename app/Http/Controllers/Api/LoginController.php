@@ -27,7 +27,7 @@ class LoginController extends Controller
 
         if (auth()->attempt($data)) {
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
-            $get_success = ResponseData::dataResponseSuccess($token);
+            $get_success = ResponseData::dataResponseSuccess($token, auth()->user());
             return $get_success;
         } else {
             return $this->get_fail;
