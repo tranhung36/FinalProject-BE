@@ -6,5 +6,8 @@ set up:
     DB_DATABASE=easyteams (tên csdl)  
     DB_USERNAME=root (username)  
     DB_PASSWORD=1234 (password)  
-2. php artisan migrate  
-3. php artisan serve  
+2.  cp .env.example .env  
+3.  php artisan key:generate  
+4. php artisan migrate  
+5. php artisan passport:install
+6. php artisan serve  
