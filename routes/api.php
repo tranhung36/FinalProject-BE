@@ -40,6 +40,6 @@ Route::put('reset-password', [ResetPasswordController::class, 'reset']);
  * Post detail & create
  */
 Route::get('posts/{slug}', [PostController::class, 'show']);
-Route::middleware(['auth:api', 'user'])->group(function () {
+Route::middleware(['auth:api', 'role:user'])->group(function () {
     Route::post('create-post/', [PostController::class, 'store']);
 });

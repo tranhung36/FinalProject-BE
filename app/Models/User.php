@@ -52,14 +52,4 @@ class User extends Authenticatable
 
         $this->notify(new ResetPasswordNotification($url));
     }
-
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isUser()
-    {
-        return $this->role === 'user';
-    }
 }
