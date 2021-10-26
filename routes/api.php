@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\api\LoginController;
-use App\Http\Controllers\api\RegisterController;
-use App\Http\Controllers\api\ResetPasswordController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\Post\PostController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,3 +35,11 @@ Route::middleware(['auth:api'])->group(function () {
  */
 Route::post('forgot-password', [ResetPasswordController::class, 'forgotPassword']);
 Route::put('reset-password', [ResetPasswordController::class, 'reset']);
+
+/**
+ * Post detail & create
+ */
+Route::get('posts/{slug}', [PostController::class, 'show']);
+Route::middleware(['auth:api', 'user'])->group(function () {
+    Route::post('create-post/', [PostController::class, 'store']);
+});

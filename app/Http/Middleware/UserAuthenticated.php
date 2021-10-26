@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserAuthenticated
 {
@@ -16,6 +17,16 @@ class UserAuthenticated
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        if (Auth::check()) {
+            if (Auth::user()->isUser()) {
+                return $next($request);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'data' => 'Unauthorised',
+                    'message' => 'Error'
+                ], 404);
+            }
+        }
     }
 }
