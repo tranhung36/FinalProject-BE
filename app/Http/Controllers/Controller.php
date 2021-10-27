@@ -30,6 +30,6 @@ class Controller extends BaseController
             ],
             'result' => false
         ];
-        return response($response, 500);
+        return response($response, 400);
     }
 }
