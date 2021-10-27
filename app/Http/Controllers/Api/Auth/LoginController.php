@@ -13,11 +13,6 @@ class LoginController extends Controller
      * Login
      */
 
-    public function __construct()
-    {
-        $this->get_fail = ResponseData::dataResponseFail();
-    }
-
     public function login(Request $request)
     {
         $data = $request->validate([
@@ -27,10 +22,9 @@ class LoginController extends Controller
 
         if (auth()->attempt($data)) {
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
-            $get_success = ResponseData::dataResponseSuccess($token, auth()->user());
-            return $get_success;
+            return $this->sendResponseUser($token, auth()->user(), 'Login successfully.');
         } else {
-            return $this->get_fail;
+            return $this->sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
         }
     }
 
@@ -41,16 +35,10 @@ class LoginController extends Controller
     public function logout()
     {
         if (Auth::check()) {
-            Auth::user()->token()->revoke();
-            return response()->json([
-                'success' => 'Logout success',
-                'result' => true
-            ], 200);
+            $logout = Auth::user()->token()->revoke();
+            return $this->sendResponse($logout, 'Logout successfully.');
         } else {
-            return response()->json([
-                'error' => 'Unauthorised',
-                'result' => false
-            ], 401);
+            return $this->sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
         }
     }
 }
