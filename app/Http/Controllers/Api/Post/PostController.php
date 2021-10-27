@@ -105,7 +105,8 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->delete();
-            return $this->success($post);
+            $data='delete successfully';
+            return $this->success($data);
         } catch (\Exception $e) {
             return $this->error($e);
         }
