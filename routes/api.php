@@ -28,8 +28,12 @@ Route::post('register/', [RegisterController::class, 'register']);
  */
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout/', [LoginController::class, 'logout']);
-    Route::resource('posts', PostController::class)->only(['store', 'update', 'destroy', 'show']);
-    Route::resource('topics', TopicController::class)->only(['store', 'update', 'destroy', 'show']);
+    Route::resource('posts', PostController::class)->only([
+        'store', 'destroy', 'update'
+    ]);
+    Route::resource('topics', TopicController::class)->only([
+        'store', 'destroy', 'update'
+    ]);
 });
 
 /**
@@ -46,4 +50,4 @@ Route::resource('topics', TopicController::class)->only(['index']);
 /**
  * Post detail
  */
-Route::get('posts/{slug}', [PostController::class, 'show']);
+Route::resource('posts', PostController::class)->only(['show', 'index']);

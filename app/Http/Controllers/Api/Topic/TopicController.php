@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\Api\Topic;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\StoreTopicRequest;
 use App\Models\Topic;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
 
 class TopicController extends Controller
 {
@@ -21,20 +18,10 @@ class TopicController extends Controller
     {
         try {
             $topics = Topic::paginate(5);
-            return $this->success($topics);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendResponse($topics, 'Successfully.');
+        } catch (\Throwable $e) {
+            return $this->sendError('Error', $e, 404);
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -47,10 +34,13 @@ class TopicController extends Controller
     {
         try {
             $request['slug'] = Str::slug($request['name'], '-');
+            if ($request->validator->fails()) {
+                return $this->sendError('Validation error.', $request->validator->messages(), 403);
+            }
             $topic = Topic::create($request->all());
-            return $this->success($topic);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendResponse($topic, 'Topic created successfully.');
+        } catch (\Throwable $e) {
+            return $this->sendError('Invalid validation.', $e, 403);
         }
     }
 
@@ -64,21 +54,10 @@ class TopicController extends Controller
     {
         try {
             $topic = Topic::where('slug', $slug)->first();
-            return $this->success($topic);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendResponse($topic, 'Topic retrieved successfully.');
+        } catch (\Throwable $e) {
+            return $this->sendError('Topic not found.', $e, 404);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -88,14 +67,22 @@ class TopicController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $slug)
+    public function update(StoreTopicRequest $request, $slug)
     {
         try {
-            $topic = Topic::where('slug', $slug)->first();
-            $topic->update($request->all());
-            return $this->success($topic);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            if ($request->validator->fails()) {
+                return $this->sendError('Validation error.', $request->validator->messages(), 403);
+            }
+            $topic = Topic::where('slug', $slug)
+                ->first()
+                ->update([
+                    'slug' => Str::slug($request->name),
+                    'name' => $request->name,
+                    'description' => $request->description
+                ]);
+            return $this->sendResponse($topic, 'Topic updated successfully.');
+        } catch (\Throwable $e) {
+            return $this->sendError('Error.', $e, 403);
         }
     }
 
@@ -110,10 +97,9 @@ class TopicController extends Controller
         try {
             $topic = Topic::where('slug', $slug)->first();
             $topic->delete();
-            $data='delete successfully';
-            return $this->success($data);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendResponse($topic, 'Topic deleted successfully.');
+        } catch (\Throwable $e) {
+            return $this->sendError('Error.', $e, 401);
         }
     }
 }

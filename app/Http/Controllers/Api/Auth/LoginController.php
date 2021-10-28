@@ -24,7 +24,7 @@ class LoginController extends Controller
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
             return $this->sendResponseUser($token, $user, 'Login successfully.');
         } else {
-            return $this->sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
+            return $this->sendError('Error', ['error' => 'Validation error.'], 403);
         }
     }
 
