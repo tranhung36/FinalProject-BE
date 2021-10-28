@@ -24,13 +24,9 @@ class RegisterController extends Controller
         if ($validator->fails()) {
             return $this->sendError('Validation error.', $validator->errors(), 403);
         }
-
         $data = $request->all();
-
         $data['password'] = bcrypt($data['password']);
-
         $user = User::create($data);
-
         $token = $user->createToken('LaravelAuthApp')->accessToken;
 
         return $this->sendResponseUser($token, $user, 'Register successfully.');
