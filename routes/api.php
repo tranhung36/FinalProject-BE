@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Post\PostController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\Topic\TopicController;
 /*
 |--------------------------------------------------------------------------
@@ -29,9 +28,8 @@ Route::post('register/', [RegisterController::class, 'register']);
  */
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout/', [LoginController::class, 'logout']);
-    Route::resource('posts',PostController::class)->only(['store','update','destroy','show']);
-    Route::resource('topics',TopicController::class)->only(['store','update','destroy','show']);
-
+    Route::resource('posts', PostController::class)->only(['store', 'update', 'destroy', 'show']);
+    Route::resource('topics', TopicController::class)->only(['store', 'update', 'destroy', 'show']);
 });
 
 /**
@@ -40,17 +38,12 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('forgot-password', [ResetPasswordController::class, 'forgotPassword']);
 Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 
-<<<<<<< HEAD
-//public route
-Route::resource('posts',PostController::class)->only(['index']);
+/**
+ * Topic list
+ */
 Route::resource('topics', TopicController::class)->only(['index']);
 
-=======
 /**
- * Post detail & create
+ * Post detail
  */
 Route::get('posts/{slug}', [PostController::class, 'show']);
-Route::middleware(['auth:api'])->group(function () {
-    Route::post('create-post/', [PostController::class, 'store']);
-});
->>>>>>> sprint1-post-detail

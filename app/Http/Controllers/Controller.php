@@ -11,28 +11,6 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-<<<<<<< HEAD
-    protected function success($data)
-    {
-        $response = [
-            'message' => 'Success',
-            'data' => $data,
-            'result' => true
-        ];
-        return response($response, 200);
-    }
-
-    protected function error($error)
-    {
-        $response = [
-            'message' => 'Error',
-            'data' => [
-                'error' => $error
-            ],
-            'result' => false
-        ];
-        return response($response, 400);
-=======
     protected function sendResponse($result, $message, $code = 200)
     {
         $response = [
@@ -74,6 +52,5 @@ class Controller extends BaseController
         }
 
         return response()->json($response, $code);
->>>>>>> sprint1-post-detail
     }
 }
