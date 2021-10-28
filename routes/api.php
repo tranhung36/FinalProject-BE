@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\api\LoginController;
-use App\Http\Controllers\api\RegisterController;
-use App\Http\Controllers\api\ResetPasswordController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\Post\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\Topic\TopicController;
@@ -40,7 +40,17 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('forgot-password', [ResetPasswordController::class, 'forgotPassword']);
 Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 
+<<<<<<< HEAD
 //public route
 Route::resource('posts',PostController::class)->only(['index']);
 Route::resource('topics', TopicController::class)->only(['index']);
 
+=======
+/**
+ * Post detail & create
+ */
+Route::get('posts/{slug}', [PostController::class, 'show']);
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('create-post/', [PostController::class, 'store']);
+});
+>>>>>>> sprint1-post-detail
