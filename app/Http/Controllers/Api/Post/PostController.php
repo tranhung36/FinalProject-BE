@@ -18,7 +18,12 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $posts = Post::paginate(5);
+            return $this->sendResponse($posts, 'Successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError($th, 'Error', 404);
+        }
     }
 
     /**
@@ -36,14 +41,13 @@ class PostController extends Controller
                 'content' => 'required'
             ]);
 
-
-
             $post = Post::create([
                 'slug' => Str::slug($request->title),
                 'title' => $request->title,
                 'content' => $request->content,
                 'user_id' => auth()->user()->id
             ]);
+
             return $this->sendResponse($post, 'Post created successfully.');
         } catch (\Throwable $th) {
             return $this->sendError($th, 'Validation error.', 403);
@@ -78,9 +82,9 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->update($request->all());
-            return $this->success($post);
+            return $this->sendResponse($post, 'Post updated successfully.');
         } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendError($e, 'Invalid validation', 403);
         }
     }
 
@@ -95,10 +99,9 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->delete();
-            $data = 'delete successfully';
-            return $this->success($data);
+            return $this->sendResponse($post, 'Post deleted successfully.');
         } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendError($e, 'Error', 403);
         }
     }
 }
