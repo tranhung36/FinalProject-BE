@@ -29,13 +29,13 @@ class ResetPasswordController extends Controller
         if ($status == Password::RESET_LINK_SENT) {
             return response([
                 'status' => __($status),
-                'result' => true
+                'success' => true
             ], 200);
         }
 
         return response([
             'message' => __($status),
-            'result' => false
+            'success' => false
         ], 500);
     }
 
@@ -63,13 +63,13 @@ class ResetPasswordController extends Controller
         if ($status == Password::PASSWORD_RESET) {
             return response([
                 'response' => 'Password reset successfully',
-                'result' => true
+                'success' => true
             ]);
         }
 
         return response([
             'message' => __($status),
-            'result' => false
+            'success' => false
         ], 500);
     }
 }
