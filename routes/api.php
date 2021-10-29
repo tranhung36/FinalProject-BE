@@ -29,8 +29,8 @@ Route::post('register/', [RegisterController::class, 'register']);
  */
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout/', [LoginController::class, 'logout']);
-    Route::resource('posts',PostController::class)->only(['store','update','destroy','show']);
-    Route::resource('topics',TopicController::class)->only(['store','update','destroy','show']);
+    Route::resource('posts',PostController::class)->only(['store','update','destroy']);
+    Route::resource('topics',TopicController::class)->only(['store','update','destroy']);
 
 });
 
@@ -42,5 +42,5 @@ Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 
 //public route
 Route::resource('posts',PostController::class)->only(['index']);
-Route::resource('topics', TopicController::class)->only(['index']);
+Route::resource('topics', TopicController::class)->only(['index','show']);
 
