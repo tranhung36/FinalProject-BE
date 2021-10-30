@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Topic;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTopicRequest;
-use App\Http\Requests\UpdateTopicRequest;
 use App\Models\Topic;
 use Illuminate\Support\Str;
 
@@ -68,28 +67,19 @@ class TopicController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTopicRequest $request, $slug)
+    public function update(StoreTopicRequest $request, $slug)
     {
         try {
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
-            $newSlug = Str::slug($request['name'], '-');
-            $topic = Topic::where('slug', $slug)->first();
-
-            if ($slug != $newSlug) {
-                $topic->update([
-                    'slug' => $newSlug,
+            $topic = Topic::where('slug', $slug)
+                ->first()
+                ->update([
+                    'slug' => Str::slug($request->name),
                     'name' => $request->name,
                     'description' => $request->description
                 ]);
-            } else {
-                $topic->update([
-                    'name' => $request->name,
-                    'description' => $request->description
-                ]);
-            }
-
             return $this->sendResponse($topic, 'Topic updated successfully.');
         } catch (\Throwable $e) {
             return $this->sendError('Error.', $e, 403);

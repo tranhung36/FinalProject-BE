@@ -45,7 +45,7 @@ Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 /**
  * Topic list
  */
-Route::resource('topics', TopicController::class)->only(['index','show']);
+Route::resource('topics', TopicController::class)->only(['index']);
 
 /**
  * Post detail
