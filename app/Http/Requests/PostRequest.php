@@ -5,11 +5,11 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePostRequest extends FormRequest
+class PostRequest extends FormRequest
 {
     public $validator = null;
 
-    /**
+    /**R
      * Determine if the user is authorized to make this request.
      *
      * @return bool
@@ -27,7 +27,7 @@ class UpdatePostRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required',
+            'title' => 'required|unique:posts|max:255',
             'content' => 'required',
             'topic_id' => 'required'
         ];
