@@ -45,7 +45,8 @@ class PostController extends Controller
                 'title' => $request['title'],
                 'content' => $request['content'],
                 'user_id' => auth()->user()->id,
-                'topic_id' => (int)$request['topic_id']
+                'topic_id' => (int)$request['topic_id'],
+                'members' => (int)$request->members,
             ]);
 
             return $this->sendResponse($post, 'Post created successfully.');
@@ -84,7 +85,7 @@ class PostController extends Controller
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
             $post = Post::where('slug', $slug)->first();
-            $newSlug = Str::slug($request['title'], '-');
+            $newSlug = Str::slug($request['title']);
 
             if ($slug != $newSlug) {
                 $post->update([
@@ -92,14 +93,16 @@ class PostController extends Controller
                     'slug' => $newSlug,
                     'content' => $request['content'],
                     'user_id' => auth()->user()->id,
-                    'topic_id' => (int)$request->topic_id
+                    'topic_id' => (int)$request->topic_id,
+                    'members' => (int)$request->members
                 ]);
             } else {
                 $post->update([
                     'title' => $request->title,
                     'content' => $request['content'],
                     'user_id' => auth()->user()->id,
-                    'topic_id' => (int)$request->topic_id
+                    'topic_id' => (int)$request->topic_id,
+                    'members' => (int)$request->members
                 ]);
             }
 
