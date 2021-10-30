@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\Post;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PostRequest;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -29,28 +31,21 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PostRequest $request)
+    public function store(StorePostRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|unique:posts|max:255',
-                'content' => 'required',
-                'topic_id' => 'required'
-            ]);
-
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
-
             $post = Post::create([
-                'slug' => Str::slug($request->title),
-                'title' => $request->title,
-                'content' => $request->content,
+                'slug' => Str::slug($request['title']),
+                'title' => $request['title'],
+                'content' => $request['content'],
                 'user_id' => auth()->user()->id,
-                'topic_id' => (int)$request->topic_id
+                'topic_id' => (int)$request['topic_id']
             ]);
 
             return $this->sendResponse($post, 'Post created successfully.');
@@ -62,7 +57,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($slug)
@@ -82,31 +77,35 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, $slug)
+    public function update(UpdatePostRequest $request, $slug)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|unique:posts|max:255',
-                'content' => 'required',
-                'topic_id' => 'required'
-            ]);
-
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
+            $post = Post::where('slug', $slug)->first();
+            $newSlug = Str::slug($request['title'], '-');
 
-            $post = Post::where('slug', $slug)
-                ->first()
-                ->update([
-                    'slug' => Str::slug($request->title),
+            if ($slug != $newSlug) {
+                $post->update([
                     'title' => $request->title,
-                    'content' => $request->content,
+                    'slug' => $newSlug,
+                    'content' => $request['content'],
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id
                 ]);
+            } else {
+                $post->update([
+                    'title' => $request->title,
+                    'content' => $request['content'],
+                    'user_id' => auth()->user()->id,
+                    'topic_id' => (int)$request->topic_id
+                ]);
+            }
+
             return $this->sendResponse($post, 'Post updated successfully.');
-        } catch (\Throwable $e) {
-            return $this->sendError('Invalid validation', $e, 403);
+        } catch (\Throwable $th) {
+            return $this->sendError('Invalid validation', $th, 403);
         }
     }
 
@@ -122,8 +121,8 @@ class PostController extends Controller
             $post = Post::where('slug', $slug)->first();
             $post->delete();
             return $this->sendResponse($post, 'Post deleted successfully.');
-        } catch (\Throwable $e) {
-            return $this->sendError('Error.', $e, 403);
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th, 403);
         }
     }
 }
