@@ -18,7 +18,7 @@ class TopicController extends Controller
     public function index()
     {
         try {
-            $topics = Topic::paginate(5);
+            $topics = Topic::all();
             return $this->sendResponse($topics, 'Successfully.');
         } catch (\Throwable $e) {
             return $this->sendError('Error', $e, 404);
@@ -34,7 +34,7 @@ class TopicController extends Controller
     public function store(StoreTopicRequest $request)
     {
         try {
-            $request['slug'] = Str::slug($request['name'], '-');
+            $request['slug'] = Str::slug($request['name']);
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
@@ -74,7 +74,7 @@ class TopicController extends Controller
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
-            $newSlug = Str::slug($request['name'], '-');
+            $newSlug = Str::slug($request['name']);
             $topic = Topic::where('slug', $slug)->first();
 
             if ($slug != $newSlug) {
