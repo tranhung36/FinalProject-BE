@@ -29,7 +29,7 @@ class UpdatePostRequest extends FormRequest
         return [
             'title' => 'required',
             'content' => 'required',
-            'topic_id' => 'required'
+            'topic_id' => 'required',
         ];
     }
 

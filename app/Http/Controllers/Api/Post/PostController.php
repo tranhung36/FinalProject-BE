@@ -64,7 +64,7 @@ class PostController extends Controller
     public function show($slug)
     {
         try {
-            $post = new PostResource(Post::where('slug', $slug)->first());
+            $post = Post::where('slug', $slug)->first();
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Post not found.', $th, 404);
