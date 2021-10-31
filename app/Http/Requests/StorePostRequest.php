@@ -29,7 +29,8 @@ class StorePostRequest extends FormRequest
         return [
             'title' => 'required|unique:posts|max:255',
             'content' => 'required',
-            'topic_id' => 'required'
+            'topic_id' => 'required',
+            'members' => 'required'
         ];
     }
     protected function failedValidation(Validator $validator)

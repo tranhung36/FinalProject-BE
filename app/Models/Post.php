@@ -9,10 +9,11 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['slug', 'title', 'content', 'user_id', 'topic_id'];
+    protected $fillable = ['slug', 'title', 'content', 'user_id', 'topic_id', 'members'];
 
     public function getRouteKeyName()
     {
         return 'slug';
     }
+    protected $table='posts';
 }
