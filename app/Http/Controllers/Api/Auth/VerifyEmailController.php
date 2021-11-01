@@ -32,9 +32,4 @@ class VerifyEmailController extends Controller
 
         return $this->sendResponse('Success.', 'Email has been verified.');
     }
-
-    public function resend()
-    {
-        return $this->sendError('Error.', 'Your email address has not been verified.', 401);
-    }
 }

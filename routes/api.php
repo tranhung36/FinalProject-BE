@@ -40,9 +40,8 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
 /**
  * Verification Email
  */
-Route::get('/email/verify', [VerifyEmailController::class, 'resend'])->name('verification.notice');
 Route::post('/email/verification-notification', [VerifyEmailController::class, 'sendVerificationEmail'])->middleware('auth:api');
-Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api', 'signed']);
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api']);
 
 /**
  * Reset Password
