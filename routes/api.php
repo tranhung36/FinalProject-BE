@@ -23,12 +23,12 @@ use App\Http\Controllers\Api\Topic\TopicController;
  */
 Route::post('login/', [LoginController::class, 'login']);
 Route::post('register/', [RegisterController::class, 'register']);
+Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api');
 
 /**
  * Auth
  */
 Route::middleware(['auth:api', 'verified'])->group(function () {
-    Route::post('logout/', [LoginController::class, 'logout']);
     Route::resource('posts', PostController::class)->only([
         'store', 'destroy', 'update'
     ]);
@@ -40,8 +40,8 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
 /**
  * Verification Email
  */
-Route::post('/email/verification-notification', [VerifyEmailController::class, 'sendVerificationEmail'])->middleware('auth:api');
-Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api']);
+Route::post('/email/verification-notification', [VerifyEmailController::class, 'sendVerificationEmail'])->middleware('auth:api', 'throttle:6,1');
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api', 'signed']);
 
 /**
  * Reset Password

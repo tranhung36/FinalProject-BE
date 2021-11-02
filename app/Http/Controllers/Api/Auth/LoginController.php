@@ -20,12 +20,17 @@ class LoginController extends Controller
         ];
 
         if (auth()->attempt($data)) {
-            $user = auth()->user();
+
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
-            return $this->sendResponseUser($token, $user, 'Login successfully.');
-        } else {
-            return $this->sendError('Error', ['error' => 'Validation error.'], 403);
+
+            if (auth()->user()->hasVerifiedEmail()) {
+                return $this->sendResponseUser($token, auth()->user(), 'Login successfully.');
+            } else {
+                return $this->sendError('Your email address is not verified.', auth()->user(), 403);
+            }
         }
+
+        return $this->sendError('Error', ['error' => 'Validation error.'], 403);
     }
 
     /**
