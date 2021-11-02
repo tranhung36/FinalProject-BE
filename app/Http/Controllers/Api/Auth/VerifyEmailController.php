@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class VerifyEmailController extends Controller
 {
-    public function sendVerificationEmail(Request $request)
+    public function reSendVerificationEmail(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
             return $this->sendResponse('Success.', 'Already Verified');
@@ -17,7 +17,7 @@ class VerifyEmailController extends Controller
 
         $request->user()->sendEmailVerificationNotification();
 
-        return $this->sendResponse('Success.', 'verification-link-sent');
+        return $this->sendResponse('Success.', 'Verification link sent!');
     }
 
     public function verify(EmailVerificationRequest $request)
