@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\Post\PostController;
+use App\Http\Controllers\Api\Schedule\CheckScheduleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
 /*
@@ -58,3 +59,8 @@ Route::resource('topics', TopicController::class)->only(['index', 'show']);
  * Post detail
  */
 Route::resource('posts', PostController::class)->only(['show', 'index']);
+
+/**
+ * Check schedule
+ */
+Route::get('schedule/', [CheckScheduleController::class, 'check'])->middleware('auth:api');
