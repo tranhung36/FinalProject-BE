@@ -36,7 +36,7 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        try {
+//        try {
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
@@ -47,12 +47,13 @@ class PostController extends Controller
                 'user_id' => auth()->user()->id,
                 'topic_id' => (int)$request['topic_id'],
                 'members' => (int)$request->members,
+                'schedule'=>$request->schedule,
             ]);
 
             return $this->sendResponse($post, 'Post created successfully.');
-        } catch (\Throwable $th) {
-            return $this->sendError($th, 'Validation error.', 403);
-        }
+//        } catch (\Throwable $th) {
+//            return $this->sendError($th, 'Validation error.', 403);
+//        }
     }
 
     /**
@@ -94,7 +95,8 @@ class PostController extends Controller
                     'content' => $request['content'],
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id,
-                    'members' => (int)$request->members
+                    'members' => (int)$request->members,
+                    'schedule'=>$request->schedule
                 ]);
             } else {
                 $post->update([
@@ -102,7 +104,8 @@ class PostController extends Controller
                     'content' => $request['content'],
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id,
-                    'members' => (int)$request->members
+                    'members' => (int)$request->members,
+                    'schedule'=>$request->schedule
                 ]);
             }
 

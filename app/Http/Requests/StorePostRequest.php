@@ -30,7 +30,8 @@ class StorePostRequest extends FormRequest
             'title' => 'required|unique:posts|max:255',
             'content' => 'required',
             'topic_id' => 'required',
-            'members' => 'required'
+            'members' => 'required',
+            'schedule'=>'required'
         ];
     }
     protected function failedValidation(Validator $validator)
