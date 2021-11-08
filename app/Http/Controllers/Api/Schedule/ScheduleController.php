@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreScheduleRequest;
 use App\Models\Post;
 use App\Models\Schedule;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
