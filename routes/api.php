@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\Post\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
@@ -28,13 +29,14 @@ Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api
 /**
  * Auth
  */
-Route::middleware(['auth:api', 'verified'])->group(function () {
+Route::middleware(['auth:api','verified'])->group(function () {
     Route::resource('posts', PostController::class)->only([
         'store', 'destroy', 'update'
     ]);
     Route::resource('topics', TopicController::class)->only([
         'store', 'destroy', 'update'
     ]);
+    Route::resource('comments', CommentController::class)->only(['store','destroy','update']);
 });
 
 /**
@@ -58,3 +60,5 @@ Route::resource('topics', TopicController::class)->only(['index', 'show']);
  * Post detail
  */
 Route::resource('posts', PostController::class)->only(['show', 'index']);
+
+Route::get('comments/post/{postId}',[\App\Http\Controllers\Api\CommentController::class, 'getCommentsByPost']);
