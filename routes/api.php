@@ -67,4 +67,4 @@ Route::resource('posts', PostController::class)->only(['show', 'index']);
 /**
  * Schedule
  */
-Route::resource('schedules', ScheduleController::class)->only(['show']);
+Route::resource('schedules', ScheduleController::class)->only(['show', 'index']);

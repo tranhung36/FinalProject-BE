@@ -45,7 +45,6 @@ class PostController extends Controller
                 'user_id' => auth()->user()->id,
                 'topic_id' => (int)$request['topic_id'],
                 'members' => (int)$request->members,
-                'owner' => 1
             ]);
 
             $post->schedules = Schedule::where('post_id', $post->id)->get();
@@ -96,7 +95,6 @@ class PostController extends Controller
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id,
                     'members' => (int)$request->members,
-                    'owner' => 1
                 ]);
             } else {
                 $post->update([
@@ -105,7 +103,6 @@ class PostController extends Controller
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id,
                     'members' => (int)$request->members,
-                    'owner' => 1
                 ]);
             }
 

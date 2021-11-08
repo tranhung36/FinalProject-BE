@@ -18,7 +18,6 @@ class Post extends Model
         'user_id',
         'topic_id',
         'members',
-        'owner'
     ];
 
     public function getRouteKeyName()
