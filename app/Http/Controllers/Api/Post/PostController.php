@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Models\Schedule;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -22,7 +22,7 @@ class PostController extends Controller
             $posts = Post::paginate(5);
             return $this->sendResponse($posts, 'Successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError('Error', $th, 404);
+            return $this->sendError('Error', $th->getMessage(), 404);
         }
     }
 
@@ -45,11 +45,13 @@ class PostController extends Controller
                 'user_id' => auth()->user()->id,
                 'topic_id' => (int)$request['topic_id'],
                 'members' => (int)$request->members,
+                'owner' => 1
             ]);
 
+            $post->schedules = Schedule::where('post_id', $post->id)->get();
             return $this->sendResponse($post, 'Post created successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError($th, 'Validation error.', 403);
+            return $this->sendError('Error.', $th->getMessage(), 404);
         }
     }
 
@@ -63,10 +65,10 @@ class PostController extends Controller
     {
         try {
             $post = Post::where('slug', $slug)->first();
-            $post->load('schedule');
+            $post->load('schedules');
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError('Post not found.', $th, 404);
+            return $this->sendError('Post not found.', $th->getMessage(), 404);
         }
     }
 
@@ -93,7 +95,8 @@ class PostController extends Controller
                     'content' => $request['content'],
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id,
-                    'members' => (int)$request->members
+                    'members' => (int)$request->members,
+                    'owner' => 1
                 ]);
             } else {
                 $post->update([
@@ -101,13 +104,14 @@ class PostController extends Controller
                     'content' => $request['content'],
                     'user_id' => auth()->user()->id,
                     'topic_id' => (int)$request->topic_id,
-                    'members' => (int)$request->members
+                    'members' => (int)$request->members,
+                    'owner' => 1
                 ]);
             }
 
             return $this->sendResponse($post, 'Post updated successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError('Invalid validation', $th, 403);
+            return $this->sendError('Error.', $th->getMessage(), 404);
         }
     }
 
@@ -124,7 +128,7 @@ class PostController extends Controller
             $post->delete();
             return $this->sendResponse($post, 'Post deleted successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError('Error.', $th, 403);
+            return $this->sendError('Error.', $th->getMessage(), 404);
         }
     }
 }

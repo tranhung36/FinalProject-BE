@@ -11,7 +11,15 @@ class Post extends Model
 
     protected $table = 'posts';
 
-    protected $fillable = ['slug', 'title', 'content', 'user_id', 'topic_id', 'members'];
+    protected $fillable = [
+        'slug',
+        'title',
+        'content',
+        'user_id',
+        'topic_id',
+        'members',
+        'owner'
+    ];
 
     public function getRouteKeyName()
     {
@@ -21,8 +29,13 @@ class Post extends Model
     /**
      * A post have one schedule
      */
-    public function schedule()
+    public function schedules()
     {
-        return $this->hasOne(Schedule::class, 'post_id');
+        return $this->hasMany(Schedule::class, 'post_id');
     }
+
+    protected $casts = [
+        'date_of_weeks' => 'array',
+        'times' => 'array'
+    ];
 }

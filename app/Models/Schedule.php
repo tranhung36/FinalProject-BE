@@ -20,4 +20,9 @@ class Schedule extends Model
     {
         return $this->belongsTo(Post::class);
     }
+
+    public function user_profile()
+    {
+        return $this->hasMany(User::class, 'id');
+    }
 }

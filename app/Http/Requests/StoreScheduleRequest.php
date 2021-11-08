@@ -5,10 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePostRequest extends FormRequest
+class StoreScheduleRequest extends FormRequest
 {
     public $validator = null;
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,12 +26,12 @@ class StorePostRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|unique:posts|max:255',
-            'content' => 'required',
-            'topic_id' => 'required',
-            'members' => 'required',
+            'day_id' => 'required',
+            'time_id' => 'required',
+            'post_id' => 'required'
         ];
     }
+
     protected function failedValidation(Validator $validator)
     {
         $this->validator = $validator;
