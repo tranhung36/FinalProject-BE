@@ -32,9 +32,4 @@ class Post extends Model
     {
         return $this->hasMany(Schedule::class, 'post_id');
     }
-
-    protected $casts = [
-        'date_of_weeks' => 'array',
-        'times' => 'array'
-    ];
 }

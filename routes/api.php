@@ -30,7 +30,7 @@ Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api
 /**
  * Auth
  */
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::resource('posts', PostController::class)->only([
         'store', 'destroy', 'update'
     ]);

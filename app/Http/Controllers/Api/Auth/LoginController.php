@@ -24,7 +24,7 @@ class LoginController extends Controller
             if (auth()->user()->hasVerifiedEmail()) {
                 return $this->sendResponseUser($token, auth()->user(), 'Login successfully.');
             } else {
-                return $this->sendError('Your email address is not verified.', ['access_token' => $token], 403);
+                return $this->sendError('Your email address is not verified.', ['access_token' => $token], 200);
             }
         }
 
