@@ -5,10 +5,12 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\Post\PostController;
-use App\Http\Controllers\Api\Schedule\CheckScheduleController;
 use App\Http\Controllers\Api\Schedule\ScheduleController;
+use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +30,13 @@ Route::post('register/', [RegisterController::class, 'register']);
 Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api');
 
 /**
+ * Filter all user
+ */
+Route::get('users', function () {
+    return User::all();
+});
+
+/**
  * Auth
  */
 Route::middleware(['auth:api', 'verified'])->group(function () {
@@ -45,8 +54,10 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
 /**
  * Verification Email
  */
-Route::post('/email/verification-notification', [VerifyEmailController::class, 'reSendVerificationEmail'])->middleware('auth:api', 'throttle:6,1');
-Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api', 'signed']);
+Route::post('/email/verification-notification', [VerifyEmailController::class, 'reSendVerificationEmail'])
+    ->middleware('auth:api', 'throttle:6,1');
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')
+    ->middleware(['auth:api', 'signed']);
 
 /**
  * Reset Password
@@ -68,3 +79,8 @@ Route::resource('posts', PostController::class)->only(['show', 'index']);
  * Schedule
  */
 Route::resource('schedules', ScheduleController::class)->only(['show', 'index']);
+
+/**
+ * Search post
+ */
+Route::get('search/{post}', [SearchController::class, 'searchPost']);
