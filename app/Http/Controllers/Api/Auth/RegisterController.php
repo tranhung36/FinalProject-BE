@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -30,6 +31,8 @@ class RegisterController extends Controller
         $data['password'] = bcrypt($data['password']);
 
         $user = User::create($data);
+        
+        event(new Registered($user));
 
         $token = $user->createToken('LaravelAuthApp')->accessToken;
 
