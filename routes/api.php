@@ -56,8 +56,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
  */
 Route::post('/email/verification-notification', [VerifyEmailController::class, 'reSendVerificationEmail'])
     ->middleware('auth:api', 'throttle:6,1');
-Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')
-    ->middleware(['auth:api', 'signed']);
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify');
 
 /**
  * Reset Password
