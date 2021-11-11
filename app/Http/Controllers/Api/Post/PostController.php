@@ -126,7 +126,7 @@ class PostController extends Controller
                 $post->delete();
                 return $this->sendResponse($post, 'Post deleted successfully');
             }
-            return $this->sendError('Error', $th->getMessage(), 401);
+            return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
         }
