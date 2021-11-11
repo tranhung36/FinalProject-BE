@@ -58,6 +58,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function schedule()
     {
-        return $this->belongsTo(Schedule::class);
+        return $this->belongsTo(Schedule::class, 'user_id', 'id');
     }
 }
