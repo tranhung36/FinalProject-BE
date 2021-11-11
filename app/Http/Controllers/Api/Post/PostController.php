@@ -122,8 +122,11 @@ class PostController extends Controller
     {
         try {
             $post = Post::where('slug', $slug)->first();
-            $post->delete();
-            return $this->sendResponse($post, 'Post deleted successfully.');
+            if (auth()->user()->id == $post->user_id) {
+                $post->delete();
+                return $this->sendResponse($post, 'Post deleted successfully');
+            }
+            return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
         }
