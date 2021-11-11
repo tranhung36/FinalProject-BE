@@ -88,9 +88,9 @@ class ScheduleController extends Controller
             $schedule = Schedule::where('id', $id)->first();
             if (auth()->user()->id == $schedule->user_id) {
                 $schedule->delete();
-                return $this->sendResponse($schedule, 'Successfully.');
+                return $this->sendResponse($schedule, 'Successfully');
             }
-            return $this->sendError('Error', $th->getMessage(), 401);
+            return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
         }
