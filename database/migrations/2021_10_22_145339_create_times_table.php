@@ -15,7 +15,7 @@ class CreateTimesTable extends Migration
     {
         Schema::create('times', function (Blueprint $table) {
             $table->id();
-            $table->string('time slot');
+            $table->string('time');
             $table->timestamps();
         });
     }
