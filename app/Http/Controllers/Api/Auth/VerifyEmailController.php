@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
+
 
 class VerifyEmailController extends Controller
 {
@@ -21,7 +23,7 @@ class VerifyEmailController extends Controller
 
     public function verify(Request $request)
     {
-        $user = User::find($request->id);
+        $user = User::find($request->route('id'));
 
         if ($user->hasVerifiedEmail()) {
             return $this->sendError('Error', 'Email already verified', 403);
