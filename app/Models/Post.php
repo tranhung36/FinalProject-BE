@@ -30,6 +30,6 @@ class Post extends Model
      */
     public function schedules()
     {
-        return $this->hasMany(Schedule::class, 'post_id');
+        return $this->hasMany(Schedule::class, 'post_id', 'id');
     }
 }
