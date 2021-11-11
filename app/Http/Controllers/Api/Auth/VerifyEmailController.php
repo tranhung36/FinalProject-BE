@@ -21,7 +21,7 @@ class VerifyEmailController extends Controller
 
     public function verify(Request $request)
     {
-        $user = User::find($request->route('id'));
+        $user = User::find($request->id);
 
         if ($user->hasVerifiedEmail()) {
             return $this->sendError('Error', 'Email already verified', 403);
