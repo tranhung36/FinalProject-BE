@@ -23,6 +23,6 @@ class Schedule extends Model
 
     public function user_profile()
     {
-        return $this->hasMany(User::class, 'id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }
