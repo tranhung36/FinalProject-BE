@@ -20,7 +20,7 @@ class CreateSchedulesTable extends Migration
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
             $table->foreignId('time_id')->constrained('times')->onDelete('cascade');
             $table->boolean('value');
-            $table->unique(['day_id', 'time_id']);
+            $table->unique(['day_id', 'time_id', 'user_id', 'post_id']);
             $table->timestamps();
         });
     }

@@ -31,6 +31,8 @@ class StorePostRequest extends FormRequest
             'content' => 'required',
             'topic_id' => 'required',
             'members' => 'required',
+            'number_of_lessons' => 'required',
+            'number_of_weeks' => 'required'
         ];
     }
     protected function failedValidation(Validator $validator)
