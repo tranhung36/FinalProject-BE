@@ -11,7 +11,7 @@ class Room extends Model
 
     protected $table = 'rooms';
 
-    protected $fillable = ['uuid', 'title', 'user_id', 'schedule_id'];
+    protected $fillable = ['wb_id', 'title', 'user_id', 'schedule_id'];
 
     public function participants()
     {

@@ -16,7 +16,6 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -28,14 +27,17 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         try {
+            $uuid = (string) Str::uuid();
+
             $room = Room::create([
                 'title' => $request['title'],
-                'wb_id' => (string) Str::uuid(),
+                'wb_id' => $uuid,
                 'user_id' => $request['user_id'],
-
+                'schedule_id' => $request['schedule_id']
             ]);
+            return $this->sendResponse($room, 'Successfully');
         } catch (\Throwable $th) {
-            //throw $th;
+            return $this->sendError('Error', $th->getMessage(), 401);
         }
     }
 
@@ -47,7 +49,6 @@ class RoomController extends Controller
      */
     public function show($id)
     {
-        //
     }
 
     /**

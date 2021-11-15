@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\Post\PostController;
+use App\Http\Controllers\Api\Room\RoomController;
 use App\Http\Controllers\Api\Schedule\ScheduleController;
 use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
@@ -83,3 +84,5 @@ Route::resource('schedules', ScheduleController::class)->only(['show', 'index'])
  * Search post
  */
 Route::get('search/{post}', [SearchController::class, 'searchPost']);
+
+Route::resource('rooms', RoomController::class);
