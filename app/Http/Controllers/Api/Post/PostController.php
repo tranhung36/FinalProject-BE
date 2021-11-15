@@ -7,8 +7,6 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -64,7 +62,8 @@ class PostController extends Controller
     public function show($slug)
     {
         try {
-            $post = new PostResource(Post::where('slug', $slug)->first());
+            $post = Post::where('slug', $slug)->first();
+            $post->load('schedule');
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Post not found.', $th, 404);
