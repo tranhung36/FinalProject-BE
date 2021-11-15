@@ -9,11 +9,20 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $table = 'posts';
+
     protected $fillable = ['slug', 'title', 'content', 'user_id', 'topic_id', 'members'];
 
     public function getRouteKeyName()
     {
         return 'slug';
     }
-    protected $table='posts';
+
+    /**
+     * A post have one schedule
+     */
+    public function schedule()
+    {
+        return $this->hasOne(Schedule::class, 'post_id');
+    }
 }

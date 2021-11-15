@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 class VerifyEmailController extends Controller
@@ -20,16 +19,25 @@ class VerifyEmailController extends Controller
         return $this->sendResponse('Success.', 'Verification link sent!');
     }
 
-    public function verify(EmailVerificationRequest $request)
+    public function verify(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return $this->sendResponse('Success.', 'Email already verified.');
+        $user = User::find($request->route('id'));
+
+        if ($user->hasVerifiedEmail()) {
+            return $this->sendError('Error', 'Email already verified', 403);
         }
 
-        if ($request->user()->markEmailAsVerified()) {
+        if (!hash_equals(
+            (string) $request->hash,
+            sha1($user->getEmailForVerification())
+        )) {
+            return $this->sendError('Error', 'Unauthorized', 401);
+        }
+
+        if ($user->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
 
-        return $this->sendResponse('Success.', 'Email has been verified.');
+        return $this->sendResponse('Success', 'Email has been verified');
     }
 }
