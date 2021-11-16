@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\Post\PostController;
+use App\Http\Controllers\Api\Schedule\CheckScheduleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
 /*
@@ -29,7 +30,7 @@ Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api
 /**
  * Auth
  */
-Route::middleware(['auth:api', ])->group(function () {
+Route::middleware(['auth:api','verified'])->group(function () {
     Route::resource('posts', PostController::class)->only([
         'store', 'destroy', 'update'
     ]);
@@ -43,7 +44,7 @@ Route::middleware(['auth:api', ])->group(function () {
  * Verification Email
  */
 Route::post('/email/verification-notification', [VerifyEmailController::class, 'reSendVerificationEmail'])->middleware('auth:api', 'throttle:6,1');
-Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api', 'signed']);
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify');
 
 /**
  * Reset Password
@@ -61,7 +62,11 @@ Route::resource('topics', TopicController::class)->only(['index', 'show']);
  */
 Route::resource('posts', PostController::class)->only(['show', 'index']);
 
+<<<<<<<<< Temporary merge branch 1
 /**
- * comments by Post
+ * Check schedule
  */
+Route::get('schedule/', [CheckScheduleController::class, 'check'])->middleware('auth:api');
+=========
 Route::get('comments/post/{postId}',[\App\Http\Controllers\Api\CommentController::class, 'getCommentsByPost']);
+>>>>>>>>> Temporary merge branch 2
