@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Image;
 
 class ProfileController extends Controller
 {
@@ -53,15 +54,21 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        $image = $request->file('avatar');
+        $img = Image::make($image->path());
+        $file_path = public_path('/uploads/avatar/');
+
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
-                $old_path = public_path() . '/uploads/avatar/' . $user->avatar;
+                $old_path = $file_path . $user->avatar;
                 if (File::exists($old_path)) {
                     File::delete($old_path);
                 }
             }
-            $avatar = 'avatar-' . time() . '.' . $request->avatar->extension();
-            $request->avatar->move(public_path('/uploads/avatar'), $avatar);
+            $avatar = 'avatar-' . time() . '.' . $image->extension();
+            $img->resize(400, 400, function ($const) {
+                $const->aspectRatio();
+            })->save($file_path . $avatar);
         } else {
             $avatar = $user->avatar;
         }
