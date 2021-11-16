@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Schedule\ScheduleController;
 use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
+use App\Http\Controllers\Api\User\ProfileController;
 use App\Models\User;
 
 /*
@@ -83,3 +84,9 @@ Route::resource('schedules', ScheduleController::class)->only(['show', 'index'])
  * Search post
  */
 Route::get('search/{post}', [SearchController::class, 'searchPost']);
+
+/**
+ * Profile
+ */
+Route::post('profile/update-profile', [ProfileController::class, 'updateProfile'])->middleware('auth:api');
+Route::post('profile/change-password', [ProfileController::class, 'changePassword'])->middleware('auth:api');
