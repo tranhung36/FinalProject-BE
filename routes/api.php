@@ -62,11 +62,11 @@ Route::resource('topics', TopicController::class)->only(['index', 'show']);
  */
 Route::resource('posts', PostController::class)->only(['show', 'index']);
 
-<<<<<<<<< Temporary merge branch 1
+
 /**
  * Check schedule
  */
 Route::get('schedule/', [CheckScheduleController::class, 'check'])->middleware('auth:api');
-=========
+
 Route::get('comments/post/{postId}',[\App\Http\Controllers\Api\CommentController::class, 'getCommentsByPost']);
->>>>>>>>> Temporary merge branch 2
+
