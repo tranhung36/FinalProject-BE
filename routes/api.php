@@ -50,6 +50,11 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::resource('schedules', ScheduleController::class)->only([
         'store', 'destroy'
     ]);
+    /**
+     * Profile
+     */
+    Route::post('profile/update-profile', [ProfileController::class, 'updateProfile']);
+    Route::post('profile/change-password', [ProfileController::class, 'changePassword']);
 });
 
 /**
@@ -84,9 +89,3 @@ Route::resource('schedules', ScheduleController::class)->only(['show', 'index'])
  * Search post
  */
 Route::get('search/{post}', [SearchController::class, 'searchPost']);
-
-/**
- * Profile
- */
-Route::post('profile/update-profile', [ProfileController::class, 'updateProfile'])->middleware('auth:api');
-Route::post('profile/change-password', [ProfileController::class, 'changePassword'])->middleware('auth:api');
