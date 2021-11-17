@@ -54,7 +54,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
      * Profile
      */
     Route::post('profile/update-profile', [ProfileController::class, 'updateProfile']);
-    Route::post('profile/change-password', [ProfileController::class, 'changePassword'])
+    Route::post('profile/change-password', [ProfileController::class, 'changePassword']);
 });
 
 /**
