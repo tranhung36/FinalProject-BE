@@ -24,7 +24,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_name',
         'email',
         'password',
-        'role'
+        'role',
+        'birthday',
+        'description',
+        'interests',
+        'gender',
+        'school',
+        'avatar'
+    ];
+
+    protected $appends = [
+        'profile_image_url'
     ];
 
     /**
@@ -58,6 +68,20 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function schedule()
     {
-        return $this->belongsTo(Schedule::class, 'user_id', 'id');
+        return $this->belongsTo(Schedule::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id', 'id');
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('/uploads/avatar/' . $this->avatar);
+        } else {
+            return 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name);
+        }
     }
 }

@@ -26,6 +26,11 @@ class StoreScheduleRequest extends FormRequest
     public function rules()
     {
         return [
+<<<<<<< HEAD
+=======
+            'day_id' => 'required',
+            'time_id' => 'required',
+>>>>>>> new-feature
             'post_id' => 'required'
         ];
     }
