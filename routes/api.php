@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\Schedule\ScheduleController;
 use App\Http\Controllers\Api\Search\SearchController;
@@ -55,6 +56,10 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
      */
     Route::post('profile/update-profile', [ProfileController::class, 'updateProfile']);
     Route::post('profile/change-password', [ProfileController::class, 'changePassword']);
+    /**
+     * Comments
+     */
+    Route::resource('comments', CommentController::class)->only(['store', 'destroy', 'update']);
 });
 
 /**
@@ -80,6 +85,7 @@ Route::resource('topics', TopicController::class)->only(['index', 'show']);
  */
 Route::resource('posts', PostController::class)->only(['show', 'index']);
 
+
 /**
  * Schedule
  */
@@ -89,3 +95,5 @@ Route::resource('schedules', ScheduleController::class)->only(['show', 'index'])
  * Search post
  */
 Route::get('search/{post}', [SearchController::class, 'searchPost']);
+
+Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPost']);
