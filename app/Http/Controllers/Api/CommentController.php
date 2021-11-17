@@ -24,12 +24,12 @@ class CommentController extends Controller
     {
         try {
             $request->validate([
-                'user_id' => 'required',
                 'post_id' => 'required',
                 'content' => 'required'
             ]);
+            $user = $request->user();
             $comment = Comment::create([
-                'user_id' => $request['user_id'],
+                'user_id' => $user->id,
                 'post_id' => $request['post_id'],
                 'content' => $request['content']
             ]);
@@ -43,13 +43,13 @@ class CommentController extends Controller
     {
         try {
             $request->validate([
-                'user_id' => 'required',
                 'post_id' => 'required',
                 'content' => 'required'
             ]);
+            $user = $request->user();
             $comment = Comment::find($id);
             $comment->update([
-                'user_id' => $request['user_id'],
+                'user_id' => $user->id,
                 'post_id' => $request['post_id'],
                 'content' => $request['content']
             ]);
@@ -61,12 +61,11 @@ class CommentController extends Controller
 
     public function destroy($id)
     {
-        try {
-            $comment = Comment::find($id);
+        $comment = Comment::find($id);
+        if ($comment->user_id == auth()->user()->id) {
             $result = $comment->delete();
             return $this->sendResponse($result, 'delete comment successfully');
-        } catch (\Exception $e) {
-            return $this->sendError($e, 'fail to delete comment', 403);
         }
+        return $this->sendError('error', 'unauthorised', 401);
     }
 }
