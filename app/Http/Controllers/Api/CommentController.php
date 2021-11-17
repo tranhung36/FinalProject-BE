@@ -16,7 +16,7 @@ class CommentController extends Controller
             }])->where('post_id', $postId)->paginate(10);
             return $this->sendResponse($comments, 'get comments successfully');
         } catch (\Exception $e) {
-            return $this->sendError($e, 'get comments failed');
+            return $this->sendError($e, 'get comments failed', 403);
         }
     }
 
@@ -35,9 +35,8 @@ class CommentController extends Controller
             ]);
             return $this->sendResponse($comment, 'create comment successfully');
         } catch (\Exception $e) {
-            return $this->sendError($e, 'fail to create comment');
+            return $this->sendError($e, 'fail to create comment', 403);
         }
-
     }
 
     public function update(Request $request, $id)
@@ -56,9 +55,8 @@ class CommentController extends Controller
             ]);
             return $this->sendResponse($comment, 'update comment successfully');
         } catch (\Exception $e) {
-            return $this->sendError($e, 'fail to create comment');
+            return $this->sendError($e, 'fail to create comment', 403);
         }
-
     }
 
     public function destroy($id)
@@ -68,7 +66,7 @@ class CommentController extends Controller
             $result = $comment->delete();
             return $this->sendResponse($result, 'delete comment successfully');
         } catch (\Exception $e) {
-            return $this->sendError($e, 'fail to delete comment');
+            return $this->sendError($e, 'fail to delete comment', 403);
         }
     }
 }
