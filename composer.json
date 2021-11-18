@@ -13,7 +13,8 @@
         "laravel/passport": "^10.1",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "nesbot/carbon": "^2.53"
+        "nesbot/carbon": "^2.53",
+        "twilio/sdk": "^6.31"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
