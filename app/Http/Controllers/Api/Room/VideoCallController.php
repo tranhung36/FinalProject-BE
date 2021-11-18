@@ -18,7 +18,7 @@ class VideoCallController extends Controller
         $apiKeySecret = env('TWILIO_API_SECRET');
 
         $room = Room::find($id);
-        $user = $request->user();
+        $user = $request->user()->id;
         $room_name = $room->title;
 
         // Create an Access Token
