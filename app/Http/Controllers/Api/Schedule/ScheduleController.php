@@ -33,11 +33,13 @@ class ScheduleController extends Controller
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
 
+            $user = $request->user();
+
             $schedule = Schedule::create([
                 'post_id' => (int) $request['post_id'],
                 'day_id' => $request['day_id'],
                 'time_id' => $request['time_id'],
-                'user_id' => auth()->user()->id,
+                'user_id' => $user->id,
                 'value' => $request['value']
             ]);
             return $this->sendResponse($schedule, 'Successfully.');

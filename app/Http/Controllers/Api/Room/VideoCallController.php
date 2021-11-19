@@ -18,7 +18,9 @@ class VideoCallController extends Controller
         $apiKeySecret = env('TWILIO_API_SECRET');
 
         $room = Room::find($id);
-        $user = $request->user()->last_name . $request->user()->id;
+        $identity = uniqid();
+        $user = $request->user();
+        $user_name = $user->first_name . ' ' .  $user->last_name;
         $room_name = $room->title;
 
         // Create an Access Token
@@ -27,8 +29,7 @@ class VideoCallController extends Controller
             $apiKeySid,
             $apiKeySecret,
             3600,
-            $user,
-            $room_name
+            $identity,
         );
 
         // Grant access to Video
@@ -38,6 +39,7 @@ class VideoCallController extends Controller
 
         // Serialize the token as a JWT
         $result = [
+            "user_name" => $user_name,
             "room_name" => $room_name,
             "token" => $token->toJWT()
         ];

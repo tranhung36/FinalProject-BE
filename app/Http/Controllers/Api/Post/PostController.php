@@ -38,11 +38,14 @@ class PostController extends Controller
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
+
+            $user = $request->user();
+
             $post = Post::create([
                 'slug' => Str::slug($request['title']),
                 'title' => $request['title'],
                 'content' => $request['content'],
-                'user_id' => auth()->user()->id,
+                'user_id' => $user->id,
                 'topic_id' => (int)$request['topic_id'],
                 'members' => (int)$request->members,
                 'number_of_lessons' => $request['number_of_lessons'],
@@ -87,6 +90,7 @@ class PostController extends Controller
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
             $post = Post::where('slug', $slug)->first();
+            $user = $request->user();
             $newSlug = Str::slug($request['title']);
 
             if ($slug != $newSlug) {
@@ -94,7 +98,7 @@ class PostController extends Controller
                     'title' => $request->title,
                     'slug' => $newSlug,
                     'content' => $request['content'],
-                    'user_id' => auth()->user()->id,
+                    'user_id' => $user->id,
                     'topic_id' => (int)$request->topic_id,
                     'members' => (int)$request->members,
                     'number_of_lessons' => $request['number_of_lessons'],
@@ -104,7 +108,7 @@ class PostController extends Controller
                 $post->update([
                     'title' => $request->title,
                     'content' => $request['content'],
-                    'user_id' => auth()->user()->id,
+                    'user_id' => $user->id,
                     'topic_id' => (int)$request->topic_id,
                     'members' => (int)$request->members,
                     'number_of_lessons' => $request['number_of_lessons'],
