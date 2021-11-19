@@ -24,12 +24,11 @@ class CommentController extends Controller
     {
         try {
             $request->validate([
-                'user_id' => 'required',
                 'post_id' => 'required',
                 'content' => 'required'
             ]);
             $comment = Comment::create([
-                'user_id' => $request['user_id'],
+                'user_id' => auth()->user()->id,
                 'post_id' => $request['post_id'],
                 'content' => $request['content']
             ]);
@@ -44,17 +43,25 @@ class CommentController extends Controller
     {
         try {
             $request->validate([
-                'user_id' => 'required',
                 'post_id' => 'required',
                 'content' => 'required'
             ]);
-            $comment = Comment::find($id);
-            $comment->update([
-                'user_id' => $request['user_id'],
-                'post_id' => $request['post_id'],
-                'content' => $request['content']
+            $comment = Comment::where([
+                ['user_id' => auth()->user()->id],
+                ['id' => $id]
             ]);
-            return $this->sendResponse($comment, 'update comment successfully');
+            if ($comment) {
+                $comment->update([
+                    'user_id' => auth()->user()->id,
+                    'post_id' => $request['post_id'],
+                    'content' => $request['content']
+                ]);
+                return $this->sendResponse($comment, 'update comment successfully');
+            } else {
+                return $this->sendError([], 'fail to create comments', 400);
+            }
+
+
         } catch (\Exception $e) {
             return $this->sendError($e, 'fail to create comment');
         }
