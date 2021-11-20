@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -85,5 +86,14 @@ class ProfileController extends Controller
         ]);
 
         return $this->sendResponse('Successfully', 'Profile has been updated');
+    }
+
+    public function show_profile($id)
+    {
+        $user = User::where('id', $id)->get();
+        $user->load('schedules');
+        $user->load('rooms');
+        $user->load('posts');
+        return $this->sendResponse($user, 'Successfully');
     }
 }

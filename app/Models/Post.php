@@ -27,11 +27,20 @@ class Post extends Model
         return 'slug';
     }
 
+    protected $casts = [
+        'registered_members' => 'array',
+    ];
+
     /**
-     * A post have one schedule
+     * A post have many schedule
      */
     public function schedules()
     {
-        return $this->hasMany(Schedule::class, 'post_id', 'id');
+        return $this->hasMany(Schedule::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'id', 'user_id');
     }
 }

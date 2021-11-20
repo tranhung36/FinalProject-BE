@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
 use App\Http\Controllers\Api\User\ProfileController;
+use App\Http\Controllers\RoomController;
 use App\Models\User;
 
 /*
@@ -38,6 +39,11 @@ Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api
 Route::get('users', function () {
     return User::all();
 });
+
+/**
+ * Show profile
+ */
+Route::get('profile/user/{id}', [ProfileController::class, 'show_profile']);
 
 /**
  * Auth
@@ -99,3 +105,6 @@ Route::get('search/{post}', [SearchController::class, 'searchPost']);
 
 Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPost']);
 Route::get('access_token/{id}', [VideoCallController::class, 'generate_token'])->middleware('auth:api');
+
+Route::post('post/{slug}/create-room', [RoomController::class, 'create_room'])->middleware('auth:api');
+Route::get('test/{slug}', [RoomController::class, 'test']);

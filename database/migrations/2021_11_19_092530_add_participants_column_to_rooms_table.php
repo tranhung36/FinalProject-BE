@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNumberOfLessonsColumnToPostsTable extends Migration
+class AddParticipantsColumnToRoomsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddNumberOfLessonsColumnToPostsTable extends Migration
      */
     public function up()
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->integer('number_of_lessons')->default(1);
-            $table->integer('number_of_weeks')->default(1);
+        Schema::table('rooms', function (Blueprint $table) {
+            $table->json('participants');
         });
     }
 
@@ -26,7 +25,8 @@ class AddNumberOfLessonsColumnToPostsTable extends Migration
      */
     public function down()
     {
-        Schema::table('posts', function (Blueprint $table) {
+        Schema::table('rooms', function (Blueprint $table) {
+            //
         });
     }
 }

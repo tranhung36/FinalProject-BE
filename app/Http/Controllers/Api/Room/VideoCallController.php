@@ -18,8 +18,8 @@ class VideoCallController extends Controller
         $apiKeySecret = env('TWILIO_API_SECRET');
 
         $room = Room::find($id);
-        $identity = uniqid();
         $user = $request->user();
+        $identity = $user->last_name . $user->id;
         $user_name = $user->first_name . ' ' .  $user->last_name;
         $room_name = $room->title;
 
