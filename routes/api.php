@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
 use App\Models\User;
+use App\Http\Controllers\Api\Group\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,13 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::resource('schedules', ScheduleController::class)->only([
         'store', 'destroy'
     ]);
+    Route::resource('groups',GroupController::class)->only([
+        'store', 'destroy','update','show'
+    ]);
+    Route::get('/groups/by-user/{userId}',[GroupController::class,'getAllGroupsByUserId']);
+    Route::post('/groups/add-members/',[GroupController::class,'addMemberToGroup']);
+    // dùng post thay delete vì post gửi được dataform
+    Route::post('groups/remove-members',[GroupController::class,'removeMemberFromGroup']);
 });
 
 /**
