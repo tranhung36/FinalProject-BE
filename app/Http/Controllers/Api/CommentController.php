@@ -13,7 +13,7 @@ class CommentController extends Controller
         try {
             $comments = Comment::with(['user' => function ($query) {
                 $query->select('*');
-            }])->where('post_id', $postId)->paginate(10);
+            }])->where('post_id', $postId)->orderBy('created_at', 'DESC')->paginate(10);
             return $this->sendResponse($comments, 'get comments successfully');
         } catch (\Exception $e) {
             return $this->sendError($e, 'get comments failed', 403);

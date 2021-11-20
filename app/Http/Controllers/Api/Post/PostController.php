@@ -19,7 +19,7 @@ class PostController extends Controller
     public function index()
     {
         try {
-            $posts = Post::paginate(5);
+            $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
             return $this->sendResponse($posts, 'Successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Error', $th->getMessage(), 404);
