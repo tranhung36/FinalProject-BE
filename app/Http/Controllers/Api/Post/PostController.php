@@ -26,11 +26,11 @@ class PostController extends Controller
                 $posts->where("title", "like", "%{$q}%")
                     ->orWhere("content", "like", "%{$q}%");
             }
-            $posts->orderBy('created_at', 'DESC')->paginate(5);
+            $posts->orderBy('created_at', 'DESC');
             if ($posts->get()->isEmpty()) {
                 return $this->sendError('Error', 'Post not found', 404);
             }
-            return $this->sendResponse($posts->get(), 'Successfully');
+            return $this->sendResponse($posts->paginate(5), 'Successfully');
         } catch (\Throwable $th) {
             return $this->sendError('Error', 'Post not found', 404);
         }
