@@ -20,17 +20,16 @@ class PostController extends Controller
     public function search(Request $request)
     {
         try {
-            $posts = Post::query();
             $q = $request->input('q');
             if ($q) {
-                $posts->where("title", "like", "%{$q}%")
-                    ->orWhere("content", "like", "%{$q}%");
+                $posts = Post::where("title", "like", "%{$q}%")
+                    ->orWhere("content", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
             }
-            $posts->orderBy('created_at', 'DESC');
-            if ($posts->get()->isEmpty()) {
+            if ($posts->isEmpty()) {
                 return $this->sendError('Error', 'Post not found', 404);
             }
-            return $this->sendResponse($posts->paginate(5), 'Successfully');
+            $posts->appends(array('q' => $q));
+            return $this->sendResponse($posts, 'Successfully');
         } catch (\Throwable $th) {
             return $this->sendError('Error', 'Post not found', 404);
         }
