@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Schedule;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -16,13 +17,22 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function search(Request $request)
     {
         try {
-            $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
-            return $this->sendResponse($posts, 'Successfully.');
+            $posts = Post::query();
+            $q = $request->input('q');
+            if ($q) {
+                $posts->where("title", "like", "%{$q}%")
+                    ->orWhere("content", "like", "%{$q}%");
+            }
+            $posts->orderBy('created_at', 'DESC')->paginate(5);
+            if ($posts->get()->isEmpty()) {
+                return $this->sendError('Error', 'Post not found', 404);
+            }
+            return $this->sendResponse($posts->get(), 'Successfully');
         } catch (\Throwable $th) {
-            return $this->sendError('Error', $th->getMessage(), 404);
+            return $this->sendError('Error', 'Post not found', 404);
         }
     }
 

@@ -90,19 +90,14 @@ Route::resource('topics', TopicController::class)->only(['index', 'show']);
 /**
  * Post detail
  */
-Route::resource('posts', PostController::class)->only(['show', 'index']);
-
+Route::resource('posts', PostController::class)->only(['show']);
+Route::get('post/search', [PostController::class, 'search']);
 
 /**
  * Schedule
  */
 Route::resource('schedules', ScheduleController::class)->only(['index']);
 Route::post('schedule/check', [ScheduleController::class, 'checkSchedule'])->middleware('auth:api');
-
-/**
- * Search post
- */
-Route::get('search/{post}', [SearchController::class, 'searchPost']);
 
 Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPost']);
 Route::get('access_token/{id}', [VideoCallController::class, 'generate_token'])->middleware('auth:api');
