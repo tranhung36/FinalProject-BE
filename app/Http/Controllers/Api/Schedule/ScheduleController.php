@@ -54,13 +54,20 @@ class ScheduleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function checkSchedule(Request $request)
     {
         try {
-            $post = Post::where('slug', $slug)->first();
-            $schedules = Schedule::where('post_id', $post->id)->get();
-            $schedules->load('user_profile');
-            return $this->sendResponse($schedules, 'Successfully.');
+            $user = $request->user();
+            $schedule = Schedule::where([
+                'user_id' => $user->id,
+                'post_id' => $request['post_id'],
+                'time_id' => $request['time_id'],
+                'day_id' => $request['day_id']
+            ])->get();
+            if (!$schedule->isEmpty()) {
+                return $this->sendResponse($schedule, 'Successfully.');
+            }
+            return $this->sendError('Error', 'Not Found', 200);
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
         }

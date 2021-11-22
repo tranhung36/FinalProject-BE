@@ -96,7 +96,8 @@ Route::resource('posts', PostController::class)->only(['show', 'index']);
 /**
  * Schedule
  */
-Route::resource('schedules', ScheduleController::class)->only(['show', 'index']);
+Route::resource('schedules', ScheduleController::class)->only(['index']);
+Route::post('schedule/check', [ScheduleController::class, 'checkSchedule'])->middleware('auth:api');
 
 /**
  * Search post
