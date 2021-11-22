@@ -19,20 +19,19 @@ class PostController extends Controller
      */
     public function search(Request $request)
     {
-        try {
-            $q = $request->input('q');
-            if ($q) {
-                $posts = Post::where("title", "like", "%{$q}%")
-                    ->orWhere("content", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
-            }
-            if ($posts->isEmpty()) {
-                return $this->sendError('Error', 'Post not found', 404);
-            }
-            $posts->appends(array('q' => $q));
-            return $this->sendResponse($posts, 'Successfully');
-        } catch (\Throwable $th) {
+        $q = $request->input('q');
+        if ($q) {
+            $posts = Post::where("title", "like", "%{$q}%")
+                ->orWhere("content", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
+        } else {
+            $all_posts = Post::orderBy('created_at', 'DESC')->paginate(5);
+            return $this->sendResponse($all_posts, 'Successfully');
+        }
+        if ($posts->isEmpty()) {
             return $this->sendError('Error', 'Post not found', 404);
         }
+        $posts->appends(array('q' => $q));
+        return $this->sendResponse($posts, 'Successfully');
     }
 
     /**
