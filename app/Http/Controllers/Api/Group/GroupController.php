@@ -83,8 +83,15 @@ class GroupController extends Controller
     public function show($id)
     {
         try {
+            //chỉ show id cho những ai nằm trong nhóm
             $group = Group::find($id);
-            if ($group->owner_id == auth()->user()->id) {
+            $groupOwnerId=$group->owner_id;
+            $arr = [$groupOwnerId];
+            $groupUsers = GroupUser::where('group_id', $id)->get();
+            foreach ($groupUsers as $user) {
+                array_push($arr, $user->user_id);
+            }
+            if (in_array(auth()->user()->id,$arr)) {
                 $members = DB::table('users')
                     ->join('group_user', 'users.id', 'group_user.user_id')
                     ->where('group_user.group_id', $id)
@@ -103,7 +110,6 @@ class GroupController extends Controller
             return $this->sendError([], $th->getMessage());
 
         }
-
     }
 
     /**
