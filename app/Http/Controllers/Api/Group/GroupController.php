@@ -54,6 +54,7 @@ class GroupController extends Controller
                 'name' => $request['name'],
                 'owner_id' => auth()->user()->id,
                 'wb_id' => Uuid::uuid4()->toString(),
+                'post_id' => intval($request['post_id']),
             ]);
             $memberIds = json_decode($request['members'], 1);
             foreach ($memberIds as $memberId) {
@@ -85,13 +86,13 @@ class GroupController extends Controller
         try {
             //chỉ show id cho những ai nằm trong nhóm
             $group = Group::find($id);
-            $groupOwnerId=$group->owner_id;
+            $groupOwnerId = $group->owner_id;
             $arr = [$groupOwnerId];
             $groupUsers = GroupUser::where('group_id', $id)->get();
             foreach ($groupUsers as $user) {
                 array_push($arr, $user->user_id);
             }
-            if (in_array(auth()->user()->id,$arr)) {
+            if (in_array(auth()->user()->id, $arr)) {
                 $members = DB::table('users')
                     ->join('group_user', 'users.id', 'group_user.user_id')
                     ->where('group_user.group_id', $id)

@@ -13,7 +13,8 @@ class Group extends Model
     protected $fillable = [
         'name',
         'wb_id',
-        'owner_id'
+        'owner_id',
+        'post_id'
     ];
 
 
