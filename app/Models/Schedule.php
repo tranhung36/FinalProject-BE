@@ -21,7 +21,7 @@ class Schedule extends Model
         return $this->belongsTo(Post::class);
     }
 
-    public function user_profile()
+    public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
