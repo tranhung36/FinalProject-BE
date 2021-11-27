@@ -145,9 +145,7 @@ class PostController extends Controller
                 ])->get();
 
                 // lấy thời khóa biểu của mấy thằng member đăng kí vào bài post
-                $memberSchedules = Schedule::where([
-                    ['post_id', $postId],
-                ])->get();
+                $memberSchedules = $post->schedules;
 
                 $membersIds = [];
                 foreach ($memberSchedules as $schedule) {
