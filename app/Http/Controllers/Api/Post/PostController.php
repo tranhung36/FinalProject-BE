@@ -159,6 +159,7 @@ class PostController extends Controller
                 }
                 $result = [
                     'post_id' => $postId,
+                    'owner_id' => auth()->user()->id,
                     'member_ids' => $membersIds,
                     'host_schedules' => $hostSchedules
                 ];
@@ -177,6 +178,7 @@ class PostController extends Controller
             $memberIds = $request['memberIds'];
             $postId = $request['postId'];
             $post = Post::find($postId);
+            $total = 0;
             if ($post->user_id == auth()->user()->id) {
                 $memberIds = json_decode($memberIds, 1);
                 foreach ($memberIds as $memberId) {
@@ -184,8 +186,9 @@ class PostController extends Controller
                         ['post_id', $postId],
                         ['user_id', $memberId]
                     ])->delete();
+                    $total += intval($schedules);
                 }
-                return $this->sendResponse($schedules, 'remove member successfully');
+                return $this->sendResponse($total, 'remove member successfully');
             } else {
                 return $this->sendError('Error', 'Access Denied', 403);
             }
