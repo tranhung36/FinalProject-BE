@@ -57,6 +57,9 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::post('/groups/add-members/',[GroupController::class,'addMemberToGroup']);
     // dùng post thay delete vì post gửi được dataform
     Route::post('groups/remove-members',[GroupController::class,'removeMemberFromGroup']);
+    Route::get('posts/members/{postId}',[PostController::class,'showPostMember']);
+    Route::post('posts/members/delete',[PostController::class,'removePostMember']);
+
 });
 
 /**
