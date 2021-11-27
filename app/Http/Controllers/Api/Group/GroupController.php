@@ -46,30 +46,13 @@ class GroupController extends Controller
     public function store(GroupRequest $request)
     {
         try {
-            $memberArr = [];
-            if ($request->validator->fails()) {
-                return $this->sendError('Validation error.', $request->validator->messages(), 412);
-            }
             $group = Group::create([
                 'name' => $request['name'],
-                'owner_id' => auth()->user()->id,
+                'post_id' => $request['post_id'],
                 'wb_id' => Uuid::uuid4()->toString(),
-                'post_id' => intval($request['post_id']),
+                'owner_id' => auth()->user()->id
             ]);
-            $memberIds = json_decode($request['members'], 1);
-            foreach ($memberIds as $memberId) {
-                $groupUser = GroupUser::create([
-                    'group_id' => $group->id,
-                    'user_id' => $memberId
-                ]);
-                $user = User::find($memberId);
-                array_push($memberArr, $user);
-            }
-            $respone = [
-                'group' => $group,
-                'members' => $memberArr
-            ];
-            return $this->sendResponse($respone, 'create group successfully');
+            return $this->sendResponse($group, 'create group successfully');
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
         }
@@ -84,27 +67,14 @@ class GroupController extends Controller
     public function show($id)
     {
         try {
-            //chỉ show id cho những ai nằm trong nhóm
             $group = Group::find($id);
-            $groupOwnerId = $group->owner_id;
-            $arr = [$groupOwnerId];
-            $groupUsers = GroupUser::where('group_id', $id)->get();
-            foreach ($groupUsers as $user) {
-                array_push($arr, $user->user_id);
-            }
-            if (in_array(auth()->user()->id, $arr)) {
-                $members = DB::table('users')
-                    ->join('group_user', 'users.id', 'group_user.user_id')
-                    ->where('group_user.group_id', $id)
-                    ->select('users.id', 'users.first_name', 'users.last_name', 'users.email')->get();
-
-                $respone = [
-                    'group' => $group,
-                    'members' => $members
+            if ($group->owner_id == auth()->user()->id) {
+                $result = [
+                    'name' => $group->name,
+                    'owner_id' => auth()->user()->id,
+                    'post' => $group->post
                 ];
-                return $this->sendResponse($respone, 'get group info successfully');
-            } else {
-                return $this->sendError([], 'get group info error', 403);
+                return $this->sendResponse($result, 'show group successfully');
             }
 
         } catch (\Throwable $th) {
@@ -131,6 +101,7 @@ class GroupController extends Controller
                 ['id', $id],
                 ['owner_id', auth()->user()->id]
             ])->first();
+            // check access permission
             if ($group) {
                 $group->update([
                     'name' => $request['name'],
