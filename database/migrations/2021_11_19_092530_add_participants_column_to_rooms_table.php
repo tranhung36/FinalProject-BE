@@ -14,7 +14,7 @@ class AddParticipantsColumnToRoomsTable extends Migration
     public function up()
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->json('participants');
+            $table->json('participants')->nullable();
         });
     }
 
