@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -90,10 +91,10 @@ class ProfileController extends Controller
 
     public function show_profile($id)
     {
-        $user = User::where('id', $id)->get();
-        $user->load('schedules');
-        $user->load('rooms');
+        $user = User::where('id', $id)->first();
         $user->load('posts');
+        $user->load('rooms');
+        $user->post_registered = Post::select('*')->whereJsonContains('registered_members', [$user->id])->get();
         return $this->sendResponse($user, 'Successfully');
     }
 }

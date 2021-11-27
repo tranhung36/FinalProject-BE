@@ -59,7 +59,7 @@ class PostController extends Controller
                 'number_of_lessons' => $request['number_of_lessons'],
                 'number_of_weeks' => $request['number_of_weeks'],
             ]);
-
+            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->get();
             $post->schedules = Schedule::where('post_id', $post->id)->get();
             return $this->sendResponse($post, 'Post created successfully.');
         } catch (\Throwable $th) {
@@ -78,6 +78,7 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->load('schedules');
+            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->get();
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Post not found.', $th->getMessage(), 404);
