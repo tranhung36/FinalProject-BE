@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -78,7 +79,9 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->load('schedules');
+            $post->profile_owner = User::select('first_name', 'last_name', 'avatar')->where('id', $post->user_id)->first();
             $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->get();
+            $post->save($post->registered_members);
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Post not found.', $th->getMessage(), 404);

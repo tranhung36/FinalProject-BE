@@ -29,6 +29,7 @@ class Post extends Model
 
     protected $casts = [
         'registered_members' => 'array',
+        'profile_owner' => 'array'
     ];
 
     /**
@@ -39,8 +40,8 @@ class Post extends Model
         return $this->hasMany(Schedule::class);
     }
 
-    public function users()
+    public function profile_owner()
     {
-        return $this->hasMany(User::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }
