@@ -6,13 +6,10 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\Post\PostController;
-use App\Http\Controllers\Api\Room\VideoCallController;
 use App\Http\Controllers\Api\Schedule\ScheduleController;
-use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
 use App\Http\Controllers\Api\User\ProfileController;
-use App\Http\Controllers\RoomController;
 use App\Models\User;
 
 /*
@@ -98,6 +95,3 @@ Route::get('post/search', [PostController::class, 'search']);
  */
 Route::resource('schedules', ScheduleController::class)->only(['index']);
 Route::post('schedule/check', [ScheduleController::class, 'checkSchedule'])->middleware('auth:api');
-
-
-Route::post('post/{slug}/create-room', [RoomController::class, 'create_room'])->middleware('auth:api');
