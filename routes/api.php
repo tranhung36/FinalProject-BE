@@ -99,8 +99,5 @@ Route::get('post/search', [PostController::class, 'search']);
 Route::resource('schedules', ScheduleController::class)->only(['index']);
 Route::post('schedule/check', [ScheduleController::class, 'checkSchedule'])->middleware('auth:api');
 
-Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPost']);
-Route::get('access_token/{id}', [VideoCallController::class, 'generate_token'])->middleware('auth:api');
 
 Route::post('post/{slug}/create-room', [RoomController::class, 'create_room'])->middleware('auth:api');
-Route::get('test/{slug}', [RoomController::class, 'test']);
