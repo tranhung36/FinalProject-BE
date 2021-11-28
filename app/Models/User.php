@@ -86,7 +86,7 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($this->avatar) {
             return asset('/uploads/avatar/' . $this->avatar);
         } else {
-            return 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name);
+            return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->first_name . ' ' . $this->last_name);
         }
     }
 }

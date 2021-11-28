@@ -95,6 +95,7 @@ class ProfileController extends Controller
         $user->load('posts');
         $user->load('rooms');
         $user->post_registered = Post::select('*')->whereJsonContains('registered_members', [['user_id' => $user->id]])->get();
+        // dd($user->post_registered['user_id']);
         return $this->sendResponse($user, 'Successfully');
     }
 }

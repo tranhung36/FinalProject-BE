@@ -42,6 +42,7 @@ class ScheduleController extends Controller
                 'user_id' => $user->id,
                 'value' => $request['value']
             ]);
+
             return $this->sendResponse($schedule, 'Successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);

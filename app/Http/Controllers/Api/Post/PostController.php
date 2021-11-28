@@ -78,10 +78,17 @@ class PostController extends Controller
     {
         try {
             $post = Post::where('slug', $slug)->first();
+            $user = User::where('id', $post->user_id)->first();
             $post->load('schedules');
-            $post->profile_owner = User::select('first_name', 'last_name', 'avatar')->where('id', $post->user_id)->first();
-            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->get();
-            $post->save($post->registered_members);
+            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->take(($post->members) + 1)->get();
+            if (count($post->registered_members) <= ($post->members + 1)) {
+                $post->save();
+            }
+            $post->first_name = $user->first_name;
+            $post->last_name = $user->last_name;
+            $post->avatar = $user->avatar;
+            $post->profile_image_url = $user->profile_image_url;
+            $post->makeHidden('user');
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
             return $this->sendError('Post not found.', $th->getMessage(), 404);

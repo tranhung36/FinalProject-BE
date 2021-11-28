@@ -15,7 +15,6 @@ class AddRegisteredMembersColumnToPostsTable extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->json('registered_members')->nullable();
-            $table->json('profile_owner')->nullable();
         });
     }
 

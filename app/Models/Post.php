@@ -22,6 +22,15 @@ class Post extends Model
         'number_of_weeks'
     ];
 
+    protected $hidden = ['user'];
+
+    protected $appends = [
+        'first_name',
+        'last_name',
+        'profile_image_url',
+        'avatar'
+    ];
+
     public function getRouteKeyName()
     {
         return 'slug';
@@ -40,8 +49,32 @@ class Post extends Model
         return $this->hasMany(Schedule::class);
     }
 
-    public function profile_owner()
+    public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function getFirstNameAttribute()
+    {
+        return $this->user->first_name;
+    }
+
+    public function getLastNameAttribute()
+    {
+        return $this->user->last_name;
+    }
+
+    public function getAvatarAttribute()
+    {
+        return $this->user->avatar;
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('/uploads/avatar/' . $this->avatar);
+        } else {
+            return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->first_name . ' ' . $this->last_name);
+        }
     }
 }
