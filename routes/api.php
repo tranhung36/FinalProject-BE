@@ -51,9 +51,8 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
         'store', 'destroy'
     ]);
     Route::resource('groups',GroupController::class)->only([
-        'store', 'destroy','update','show'
+        'store', 'destroy','update','show','index'
     ]);
-    Route::get('/groups/by-user/{userId}',[GroupController::class,'getAllGroupsByUserId']);
     Route::post('/groups/add-members/',[GroupController::class,'addMemberToGroup']);
     // dùng post thay delete vì post gửi được dataform
     Route::post('groups/remove-members',[GroupController::class,'removeMemberFromGroup']);
