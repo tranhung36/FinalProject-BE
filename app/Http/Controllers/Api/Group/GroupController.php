@@ -78,19 +78,30 @@ class GroupController extends Controller
     {
         try {
             $group = Group::find($id);
+            $postId = $group->post_id;
+            $schedules = Schedule::where([
+                ['post_id', $postId],
+                ['user_id', auth()->user()->id]
+            ])->get();
+            // schedukes trả về rỗng nhưng dùng hàm empty để check rỗng thì ra false, fuck laravel
+            $result = [
+                'name' => $group->name,
+                'owner_id' => $group->owner_id,
+                'wb_id' => $group->wb_id,
+                'post' => $group->post,
+            ];
             if ($group->owner_id == auth()->user()->id) {
-                $result = [
-                    'name' => $group->name,
-                    'owner_id' => auth()->user()->id,
-                    'wb_id' => $group->wb_id,
-                    'post' => $group->post,
-                ];
                 return $this->sendResponse($result, 'show group successfully');
+            } else {
+                // vì $schedules trả về là kiểu model nên k dùng if else check đc
+                if (count($schedules) != 0) {
+                    return $this->sendResponse($result, 'show group successfully');
+                } else {
+                    return $this->sendError('Error', 'Access denied', 403);
+                }
             }
-
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
-
         }
     }
 
