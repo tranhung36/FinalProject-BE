@@ -21,17 +21,11 @@ class GroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllGroupsByUserId($userId)
+    public function index()
     {
         try {
-            if ($userId == auth()->user()->id) {
-                $groups = Group::where('owner_id', $userId)->get();
-                return $this->sendResponse($groups, 'fetch all groups data by user successfully');
-            } else {
-                return $this->sendError([], 'fetch all groups data by user successfully', 403);
-
-            }
-
+            $groups = Group::where('owner_id', auth()->user()->id)->get();
+            return $this->sendResponse($groups, 'fetch all groups data by user successfully');
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
         }
