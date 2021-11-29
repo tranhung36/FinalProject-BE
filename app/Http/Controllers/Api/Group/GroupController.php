@@ -72,7 +72,8 @@ class GroupController extends Controller
                 $result = [
                     'name' => $group->name,
                     'owner_id' => auth()->user()->id,
-                    'post' => $group->post
+                    'wb_id' => $group->wb_id,
+                    'post' => $group->post,
                 ];
                 return $this->sendResponse($result, 'show group successfully');
             }
