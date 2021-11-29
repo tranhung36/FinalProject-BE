@@ -79,7 +79,9 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $user = User::where('id', $post->user_id)->first();
-            $post->load('schedules');
+            $post->load(['schedules' => function ($query) use ($post) {
+                $query->where('user_id', $post->user_id);
+            }]);
             $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->take(($post->members) + 1)->get();
             if (count($post->registered_members) <= ($post->members + 1)) {
                 $post->save();

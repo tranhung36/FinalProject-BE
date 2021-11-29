@@ -38,7 +38,6 @@ class Post extends Model
 
     protected $casts = [
         'registered_members' => 'array',
-        'profile_owner' => 'array'
     ];
 
     /**
