@@ -9,6 +9,7 @@ use App\Http\Requests\RemoveMembersFromGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,9 +24,24 @@ class GroupController extends Controller
      */
     public function index()
     {
+        // trả về các group theo post_id mà người dùng đk
         try {
-            $groups = Group::where('owner_id', auth()->user()->id)->get();
-            return $this->sendResponse($groups, 'fetch all groups data by user successfully');
+            // khởi tạo mảng để lưu group
+            $arr = [];
+            //tìm mấy cái tkb chứa lz auth
+            $schedules = Schedule::where('user_id', auth()->user()->id)->get();
+            foreach ($schedules as $schedule) {
+                // tìm lz group theo lz schedule xong bỏ bô mảng
+                $group = Group::where('post_id', $schedule->post_id)->first();
+                //kiểm tra mảng có group chưa
+                if ($group) {
+                    if (!in_array($group, $arr)) {
+                        array_push($arr, $group);
+                    }
+                }
+            }
+
+            return $this->sendResponse($arr, 'fetch all groups data by user successfully');
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
         }

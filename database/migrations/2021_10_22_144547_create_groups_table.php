@@ -16,8 +16,8 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('wb_id');
-            $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
+            $table->string('wb_id')->unique();
+            $table->foreignId('post_id')->unique()->constrained('posts')->onDelete('cascade');
             $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
