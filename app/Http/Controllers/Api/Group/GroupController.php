@@ -81,9 +81,9 @@ class GroupController extends Controller
     {
         try {
             // Substitute your Twilio Account SID and API Key details
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $apiKeySid = env('TWILIO_API_KEY');
-            $apiKeySecret = env('TWILIO_API_SECRET');
+            $accountSid = (string) env('TWILIO_ACCOUNT_SID');
+            $apiKeySid = (string) env('TWILIO_API_KEY');
+            $apiKeySecret = (string) env('TWILIO_API_SECRET');
 
             $group = Group::where('id', $id)->first();
 
@@ -91,7 +91,6 @@ class GroupController extends Controller
             $identity = $user->last_name . $user->id;
             $user_name = $user->first_name . ' ' .  $user->last_name;
             $group_name = $group->name;
-            dd($group_name);
 
             // Create an Access Token
             $token = new AccessToken(
