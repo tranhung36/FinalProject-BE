@@ -58,6 +58,7 @@ class GroupController extends Controller
             $group = Group::create([
                 'name' => $request['name'],
                 'wb_id' => Str::uuid(),
+                'post_id' => $post->id,
                 'user_id' => auth()->user()->id
             ]);
             $group->group_users = GroupUser::create([
