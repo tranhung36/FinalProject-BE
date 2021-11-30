@@ -77,7 +77,7 @@ class GroupController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function joinGroup(Request $request, $id)
+    public function show(Request $request, $id)
     {
         try {
             // Substitute your Twilio Account SID and API Key details
