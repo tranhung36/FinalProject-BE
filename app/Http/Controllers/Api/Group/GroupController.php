@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Api\Group;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AddMemberToGroupRequest;
 use Illuminate\Support\Str;
-use App\Http\Requests\RemoveMembersFromGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\Post;
 use App\Models\Schedule;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VideoGrant;
