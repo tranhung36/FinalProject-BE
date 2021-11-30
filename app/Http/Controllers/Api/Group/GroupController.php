@@ -58,7 +58,6 @@ class GroupController extends Controller
             $group = Group::create([
                 'name' => $request['name'],
                 'wb_id' => Str::uuid(),
-                'post_id' => $post->id,
                 'user_id' => auth()->user()->id
             ]);
             $group->group_users = GroupUser::create([
@@ -168,6 +167,7 @@ class GroupController extends Controller
             ])->first();
             if ($group) {
                 $group->delete();
+                Post::where('id', $group->post_id)->delete();
                 return $this->sendResponse(true, 'delete group successfully.');
             } else {
                 return $this->sendError([], 'delete group failed', 403);
