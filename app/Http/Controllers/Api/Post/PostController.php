@@ -37,7 +37,7 @@ class PostController extends Controller
             $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
         }
         if ($posts->isEmpty()) {
-            return $this->sendError('Error', 'Post not found', 404);
+            return $this->sendError('error', [], 200);
         }
         $posts->appends(array('q' => $q, 'topic' => $topic));
         return $this->sendResponse($posts, 'Successfully');
