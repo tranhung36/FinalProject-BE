@@ -71,11 +71,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Schedule::class);
     }
 
-    public function rooms()
-    {
-        return $this->hasMany(Room::class);
-    }
-
     public function posts()
     {
         return $this->hasMany(Post::class);
