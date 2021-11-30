@@ -12,7 +12,6 @@ use App\Models\GroupUser;
 use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VideoGrant;
@@ -86,6 +85,8 @@ class GroupController extends Controller
 
             $group = Group::where('id', $id)->first();
             $user = $request->user();
+            dd($group->group_user);
+            // if (in_array($user->id, $group->group_user->))
             $identity = $user->last_name . $user->id;
             $user_name = $user->first_name . ' ' .  $user->last_name;
             $group_name = $group->name;

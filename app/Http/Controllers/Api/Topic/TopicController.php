@@ -18,7 +18,8 @@ class TopicController extends Controller
     public function index()
     {
         try {
-            $topics = Topic::all();
+            $topics = Topic::paginate(5);
+            $topics->makeHidden('posts');
             return $this->sendResponse($topics, 'Successfully.');
         } catch (\Throwable $e) {
             return $this->sendError('Error', $e, 404);

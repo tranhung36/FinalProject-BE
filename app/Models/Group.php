@@ -21,4 +21,9 @@ class Group extends Model
     {
         return $this->belongsTo(Post::class, 'post_id');
     }
+
+    public function group_users()
+    {
+        return $this->belongsTo(GroupUser::class);
+    }
 }
