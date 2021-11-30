@@ -10,6 +10,7 @@ class Group extends Model
     use HasFactory;
 
     protected $table = 'groups';
+
     protected $fillable = [
         'name',
         'wb_id',
@@ -24,6 +25,6 @@ class Group extends Model
 
     public function group_users()
     {
-        return $this->belongsTo(GroupUser::class);
+        return $this->hasOne(GroupUser::class);
     }
 }

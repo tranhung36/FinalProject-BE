@@ -31,11 +31,6 @@ class Post extends Model
         'avatar'
     ];
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
-
     protected $casts = [
         'registered_members' => 'array',
     ];
@@ -76,7 +71,8 @@ class Post extends Model
             return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->first_name . ' ' . $this->last_name);
         }
     }
-    public function group(){
+    public function group()
+    {
         return $this->hasOne(Group::class);
     }
 }

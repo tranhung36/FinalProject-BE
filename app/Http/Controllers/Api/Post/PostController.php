@@ -82,10 +82,10 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
         try {
-            $post = Post::where('slug', $slug)->first();
+            $post = Post::where('id', $id)->first();
             $user = User::where('id', $post->user_id)->first();
             $post->load(['schedules' => function ($query) use ($post) {
                 $query->where('user_id', $post->user_id);
@@ -112,20 +112,18 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePostRequest $request, $slug)
+    public function update(UpdatePostRequest $request, $id)
     {
         try {
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
-            $post = Post::where('slug', $slug)->first();
+            $post = Post::where('id', $id)->first();
             $user = $request->user();
-            $newSlug = Str::slug($request['title']);
-
-            if ($slug != $newSlug) {
+            if ($post->user_id == $user->id) {
                 $post->update([
-                    'title' => $request->title,
-                    'slug' => $newSlug,
+                    'slug' => Str::slug($request['title']),
+                    'title' => $request['title'],
                     'content' => $request['content'],
                     'user_id' => $user->id,
                     'topic_id' => (int)$request->topic_id,
@@ -134,15 +132,7 @@ class PostController extends Controller
                     'number_of_weeks' => $request['number_of_weeks'],
                 ]);
             } else {
-                $post->update([
-                    'title' => $request->title,
-                    'content' => $request['content'],
-                    'user_id' => $user->id,
-                    'topic_id' => (int)$request->topic_id,
-                    'members' => (int)$request->members,
-                    'number_of_lessons' => $request['number_of_lessons'],
-                    'number_of_weeks' => $request['number_of_weeks'],
-                ]);
+                return $this->sendError('Error', 'Access Denied', 403);
             }
 
             return $this->sendResponse($post, 'Post updated successfully.');
@@ -157,10 +147,10 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
         try {
-            $post = Post::where('slug', $slug)->first();
+            $post = Post::where('id', $id)->first();
             if (auth()->user()->id == $post->user_id) {
                 $post->delete();
                 return $this->sendResponse($post, 'Post deleted successfully');
@@ -186,7 +176,7 @@ class PostController extends Controller
                     }
                 }
             } else {
-                return $this->sendError('error', 'access denied', 401);
+                return $this->sendError('error', 'access denied', 403);
             }
             return $this->sendResponse($schedule, 'remove member successfully');
         } catch (\Throwable $th) {

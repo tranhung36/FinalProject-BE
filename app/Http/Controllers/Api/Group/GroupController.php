@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Api\Group;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddMemberToGroupRequest;
-use App\Http\Requests\GroupRequest;
+use Illuminate\Support\Str;
 use App\Http\Requests\RemoveMembersFromGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\Post;
 use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Ramsey\Uuid\Uuid;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VideoGrant;
 
@@ -54,14 +54,19 @@ class GroupController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(GroupRequest $request)
+    public function createGroup(Request $request, $id)
     {
         try {
+            $post = Post::where('id', $id)->first();
             $group = Group::create([
                 'name' => $request['name'],
-                'post_id' => $request['post_id'],
-                'wb_id' => Uuid::uuid4()->toString(),
+                'wb_id' => Str::uuid(),
+                'post_id' => $post->id,
                 'user_id' => auth()->user()->id
+            ]);
+            $group->group_users = GroupUser::create([
+                'group_id' => $group->id,
+                'group_members' => $post->registered_members
             ]);
             return $this->sendResponse($group, 'create group successfully');
         } catch (\Throwable $th) {
@@ -84,9 +89,8 @@ class GroupController extends Controller
             $apiKeySecret = env('TWILIO_API_SECRET');
 
             $group = Group::where('id', $id)->first();
+
             $user = $request->user();
-            dd($group->group_user);
-            // if (in_array($user->id, $group->group_user->))
             $identity = $user->last_name . $user->id;
             $user_name = $user->first_name . ' ' .  $user->last_name;
             $group_name = $group->name;
@@ -107,11 +111,11 @@ class GroupController extends Controller
 
             // Serialize the token as a JWT
             $result = [
+                "host_id" => $group->user_id,
                 "member_id" => $user->id,
                 "user_name" => $user_name,
                 "group_name" => $group_name,
                 'wb_id' => $group->wb_id,
-                'post' => $group->post,
                 "token" => $token->toJWT()
             ];
             return $this->sendResponse($result, 'show group successfully');
@@ -163,11 +167,11 @@ class GroupController extends Controller
         try {
             $group = Group::where([
                 ['id', $id],
-                ['owner_id', auth()->user()->id]
+                ['user_id', auth()->user()->id]
             ])->first();
             if ($group) {
                 $group->delete();
-                return $this->sendResponse(true, 'update group successfully.');
+                return $this->sendResponse(true, 'delete group successfully.');
             } else {
                 return $this->sendError([], 'delete group failed', 403);
             }
@@ -176,59 +180,62 @@ class GroupController extends Controller
         }
     }
 
-    public function addMemberToGroup(AddMemberToGroupRequest $request)
-    {
-        try {
-            if ($request->validator->fails()) {
-                return $this->sendError('Validation error.', $request->validator->messages(), 412);
-            }
-            $memberArr = [];
-            $groupId = $request['group_id'];
-            $owner_id = Group::find($groupId)->owner_id;
-            if ($owner_id == auth()->user()->id) {
-                $memberIds = json_decode($request['members'], 1);
-                foreach ($memberIds as $memberId) {
-                    GroupUser::create([
-                        'group_id' => $request['group_id'],
-                        'user_id' => $memberId
-                    ]);
-                    $user = User::find($memberId);
-                    array_push($memberArr, $user);
-                }
-                $group = Group::find($groupId);
-                $respone = [
-                    'group' => $group,
-                    'add_members' => $memberArr
-                ];
-                return $this->sendResponse($respone, 'add members to group successfully');
-            } else {
-                return $this->sendError([], "you can't add members to group failed", 403);
-            }
-        } catch (\Throwable $th) {
-            return $this->sendError([], $th->getMessage());
-        }
-    }
+    // public function addMemberToGroup(AddMemberToGroupRequest $request)
+    // {
+    //     try {
+    //         if ($request->validator->fails()) {
+    //             return $this->sendError('Validation error.', $request->validator->messages(), 412);
+    //         }
+    //         $memberArr = [];
+    //         $groupId = $request['group_id'];
+    //         $owner_id = Group::find($groupId)->owner_id;
+    //         if ($owner_id == auth()->user()->id) {
+    //             $memberIds = json_decode($request['members'], 1);
+    //             foreach ($memberIds as $memberId) {
+    //                 GroupUser::create([
+    //                     'group_id' => $request['group_id'],
+    //                     'user_id' => $memberId
+    //                 ]);
+    //                 $user = User::find($memberId);
+    //                 array_push($memberArr, $user);
+    //             }
+    //             $group = Group::find($groupId);
+    //             $respone = [
+    //                 'group' => $group,
+    //                 'add_members' => $memberArr
+    //             ];
+    //             return $this->sendResponse($respone, 'add members to group successfully');
+    //         } else {
+    //             return $this->sendError([], "you can't add members to group failed", 403);
+    //         }
+    //     } catch (\Throwable $th) {
+    //         return $this->sendError([], $th->getMessage());
+    //     }
+    // }
 
-    public function removeMemberFromGroup(RemoveMembersFromGroupRequest $request)
+    public function removeMemberFromGroup(Request $request, $id)
     {
         try {
-            if ($request->validator->fails()) {
-                return $this->sendError('Validation error.', $request->validator->messages(), 412);
-            }
-            $groupId = $request['group_id'];
-            $owner_id = Group::find($groupId)->owner_id;
-            if ($owner_id == auth()->user()->id) {
-                $memberIds = json_decode($request['members'], 1);
-                foreach ($memberIds as $memberId) {
-                    $groupUser = GroupUser::where([
-                        ['group_id', $groupId],
-                        ['user_id', $memberId]
-                    ])->first();
-                    $groupUser->delete();
+            $memberId = $request['member_id'];
+
+            $group_user = GroupUser::where('group_id', $id)->first();
+            $arr = $group_user->group_members;
+
+            $group = Group::where('id', $group_user->group_id)->first();
+            if ($group->user_id == auth()->user()->id) {
+                for ($i = 0; $i < count($arr); $i++) {
+                    if ($memberId == $arr[$i]['user_id']) {
+                        unset($arr[$i]);
+                        Schedule::where('user_id', $memberId)->delete();
+                        $group_user->group_members = $arr;
+                        $group_user->save();
+                    } else {
+                        return $this->sendError('error', 'member not found', 404);
+                    }
                 }
                 return $this->sendResponse(true, 'remove members from group successfully');
             } else {
-                return $this->sendError([], 'remove members from group successfully', 403);
+                return $this->sendError('error', 'access denied', 401);
             }
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());

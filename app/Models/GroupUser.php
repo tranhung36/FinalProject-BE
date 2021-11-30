@@ -9,8 +9,14 @@ class GroupUser extends Model
 {
     use HasFactory;
 
+    protected $table = 'group_user';
+
     protected $fillable = [
         'group_id',
-        'user_id',
+        'group_members',
+    ];
+
+    protected $casts = [
+        'group_members' => 'array'
     ];
 }

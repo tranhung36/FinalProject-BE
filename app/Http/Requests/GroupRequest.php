@@ -28,8 +28,7 @@ class GroupRequest extends FormRequest
     {
         return [
             'name' => 'required|max:100',
-            'members' => 'required',
-            'post_id'=>'required'
+            'post_id' => 'required'
         ];
     }
 
