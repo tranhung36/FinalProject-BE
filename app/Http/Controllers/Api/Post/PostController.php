@@ -20,31 +20,28 @@ class PostController extends Controller
      */
     public function search(Request $request)
     {
-        $q = $request->input('q');
-        $topic = $request->input('topic');
-        if ($q && $topic) {
-            $posts = Post::where(function ($query) use ($topic, $q) {
-                return $query->where([
-                    ["title", "like", "%{$q}%"],
-                    ["topic_id", $topic]
-                ]);
-            })->orderBy('created_at', 'DESC')->paginate(5);
-        } else if ($q) {
-            $posts = Post::where("title", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
-        } else if ($topic) {
-            $posts = Post::where('topic_id', $topic)->orderBy('created_at', 'DESC')->paginate(5);
-        } else {
-            $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
+        try {
+            $q = $request->input('q');
+            $topic = $request->input('topic');
+            if ($q && $topic) {
+                $posts = Post::where(function ($query) use ($topic, $q) {
+                    return $query->where([
+                        ["title", "like", "%{$q}%"],
+                        ["topic_id", $topic]
+                    ]);
+                })->orderBy('created_at', 'DESC')->paginate(5);
+            } else if ($q) {
+                $posts = Post::where("title", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
+            } else if ($topic) {
+                $posts = Post::where('topic_id', $topic)->orderBy('created_at', 'DESC')->paginate(5);
+            } else {
+                $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
+            }
+            $posts->appends(array('q' => $q, 'topic' => $topic));
+            return $this->sendResponse($posts, 'Successfully');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error', $th->getMessage(), 200);
         }
-        if ($posts->isEmpty()) {
-            return [
-                'success' => false,
-                'data' => [],
-                'message' => 'not found'
-            ];
-        }
-        $posts->appends(array('q' => $q, 'topic' => $topic));
-        return $this->sendResponse($posts, 'Successfully');
     }
 
     /**
