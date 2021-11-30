@@ -18,10 +18,6 @@ class Group extends Model
         'post_id'
     ];
 
-    protected $hidden = [
-        'post_id'
-    ];
-
     public function post()
     {
         return $this->belongsTo(Post::class, 'post_id');
