@@ -161,11 +161,11 @@ class PostController extends Controller
         }
     }
 
-    public function removePostMember(Request $request)
+    public function removePostMember(Request $request, $id)
     {
         try {
             $memberId = $request['member_id'];
-            $post = Post::where('id', $request['post_id'])->first();
+            $post = Post::where('id', $id)->first();
             if ($post->user_id == auth()->user()->id) {
                 foreach ($post->registered_members as $member) {
                     if ($memberId == $member['user_id']) {
