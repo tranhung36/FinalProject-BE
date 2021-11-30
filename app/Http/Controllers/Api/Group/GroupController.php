@@ -91,6 +91,7 @@ class GroupController extends Controller
             $identity = $user->last_name . $user->id;
             $user_name = $user->first_name . ' ' .  $user->last_name;
             $group_name = $group->name;
+            dd($group_name);
 
             // Create an Access Token
             $token = new AccessToken(
