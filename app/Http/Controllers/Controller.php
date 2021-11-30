@@ -40,7 +40,7 @@ class Controller extends BaseController
         return response()->json($response, $code);
     }
 
-    protected function sendError($error, $errorMessage = [], $code)
+    protected function sendError($error, $errorMessage = [], $code = 400)
     {
         $response = [
             'success' => false,

@@ -21,17 +21,25 @@ class PostController extends Controller
     public function search(Request $request)
     {
         $q = $request->input('q');
-        if ($q) {
-            $posts = Post::where("title", "like", "%{$q}%")
-                ->orWhere("content", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
+        $topic = $request->input('topic');
+        if ($q && $topic) {
+            $posts = Post::where(function ($query) use ($topic, $q) {
+                return $query->where([
+                    ["title", "like", "%{$q}%"],
+                    ["topic_id", $topic]
+                ]);
+            })->orderBy('created_at', 'DESC')->paginate(5);
+        } else if ($q) {
+            $posts = Post::where("title", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
+        } else if ($topic) {
+            $posts = Post::where('topic_id', $topic)->orderBy('created_at', 'DESC')->paginate(5);
         } else {
-            $all_posts = Post::orderBy('created_at', 'DESC')->paginate(5);
-            return $this->sendResponse($all_posts, 'Successfully');
+            $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
         }
         if ($posts->isEmpty()) {
             return $this->sendError('Error', 'Post not found', 404);
         }
-        $posts->appends(array('q' => $q));
+        $posts->appends(array('q' => $q, 'topic' => $topic));
         return $this->sendResponse($posts, 'Successfully');
     }
 
@@ -82,8 +90,8 @@ class PostController extends Controller
             $post->load(['schedules' => function ($query) use ($post) {
                 $query->where('user_id', $post->user_id);
             }]);
-            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->take(($post->members) + 1)->get();
-            if (count($post->registered_members) <= ($post->members + 1)) {
+            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->skip(1)->take($post->members)->get();
+            if (count($post->registered_members) <= $post->members) {
                 $post->save();
             }
             $post->first_name = $user->first_name;
@@ -160,6 +168,29 @@ class PostController extends Controller
             return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
+        }
+    }
+
+    public function removePostMember(Request $request)
+    {
+        try {
+            $memberId = $request['member_id'];
+            $post = Post::where('id', $request['post_id'])->first();
+            if ($post->user_id == auth()->user()->id) {
+                foreach ($post->registered_members as $member) {
+                    if ($memberId == $member['user_id']) {
+                        $schedule = Schedule::where([
+                            ['post_id', $post->id],
+                            ['user_id', $member['user_id']]
+                        ])->delete();
+                    }
+                }
+            } else {
+                return $this->sendError('error', 'access denied', 401);
+            }
+            return $this->sendResponse($schedule, 'remove member successfully');
+        } catch (\Throwable $th) {
+            return $this->sendError('error', $th->getMessage());
         }
     }
 }

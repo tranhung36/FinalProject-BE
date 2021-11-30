@@ -6,14 +6,12 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\Post\PostController;
-use App\Http\Controllers\Api\Room\VideoCallController;
 use App\Http\Controllers\Api\Schedule\ScheduleController;
-use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
 use App\Http\Controllers\Api\User\ProfileController;
-use App\Http\Controllers\RoomController;
 use App\Models\User;
+use App\Http\Controllers\Api\Group\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +65,13 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
      * Comments
      */
     Route::resource('comments', CommentController::class)->only(['store', 'destroy', 'update']);
+    Route::resource('groups', GroupController::class)->only([
+        'store', 'destroy', 'update', 'show', 'index'
+    ]);
+    Route::post('/groups/add-members/', [GroupController::class, 'addMemberToGroup']);
+    // dùng post thay delete vì post gửi được dataform
+    Route::post('groups/remove-members', [GroupController::class, 'removeMemberFromGroup']);
+    Route::post('posts/members/delete', [PostController::class, 'removePostMember']);
 });
 
 /**
@@ -88,7 +93,7 @@ Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 Route::resource('topics', TopicController::class)->only(['index', 'show']);
 
 /**
- * Post detail
+ * Post detail & all posts
  */
 Route::resource('posts', PostController::class)->only(['show']);
 Route::get('post/search', [PostController::class, 'search']);
@@ -100,7 +105,3 @@ Route::resource('schedules', ScheduleController::class)->only(['index']);
 Route::post('schedule/check', [ScheduleController::class, 'checkSchedule'])->middleware('auth:api');
 
 Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPost']);
-Route::get('access_token/{id}', [VideoCallController::class, 'generate_token'])->middleware('auth:api');
-
-Route::post('post/{slug}/create-room', [RoomController::class, 'create_room'])->middleware('auth:api');
-Route::get('test/{slug}', [RoomController::class, 'test']);

@@ -76,4 +76,7 @@ class Post extends Model
             return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->first_name . ' ' . $this->last_name);
         }
     }
+    public function group(){
+        return $this->hasOne(Group::class);
+    }
 }
