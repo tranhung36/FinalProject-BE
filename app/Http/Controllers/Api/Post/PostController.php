@@ -37,7 +37,7 @@ class PostController extends Controller
             $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
         }
         if ($posts->isEmpty()) {
-            return $this->sendError('error', [], 200);
+            return $this->sendError([], 'error', 200);
         }
         $posts->appends(array('q' => $q, 'topic' => $topic));
         return $this->sendResponse($posts, 'Successfully');
@@ -101,7 +101,7 @@ class PostController extends Controller
             $post->makeHidden('user');
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError('Post not found.', $th->getMessage(), 404);
+            return $this->sendError('Post not found', $th->getMessage(), 200);
         }
     }
 
