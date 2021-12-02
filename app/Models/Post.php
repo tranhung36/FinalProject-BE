@@ -28,7 +28,8 @@ class Post extends Model
         'first_name',
         'last_name',
         'profile_image_url',
-        'avatar'
+        'avatar',
+        'active'
     ];
 
     protected $casts = [
@@ -61,6 +62,14 @@ class Post extends Model
     public function getAvatarAttribute()
     {
         return $this->user->avatar;
+    }
+
+    public function getActiveAttribute()
+    {
+        if (!$this->schedules->isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     public function getProfileImageUrlAttribute()
