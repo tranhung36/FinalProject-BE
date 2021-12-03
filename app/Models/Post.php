@@ -32,4 +32,7 @@ class Post extends Model
     {
         return $this->hasMany(Schedule::class, 'post_id', 'id');
     }
+    public function group(){
+        return $this->hasOne(Group::class);
+    }
 }
