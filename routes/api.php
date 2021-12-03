@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Schedule\ScheduleController;
 use App\Http\Controllers\Api\Search\SearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Topic\TopicController;
+use App\Http\Controllers\Api\Messages\GroupMessagesController;
 use App\Models\User;
 
 /*
@@ -49,6 +50,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::resource('schedules', ScheduleController::class)->only([
         'store', 'destroy'
     ]);
+    Route::resource('messages',GroupMessagesController::class);
 });
 
 /**
