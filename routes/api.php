@@ -51,16 +51,18 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::resource('schedules', ScheduleController::class)->only([
         'store', 'destroy'
     ]);
-    Route::resource('groups',GroupController::class)->only([
-        'store', 'destroy','update','show','index'
+    Route::resource('groups', GroupController::class)->only([
+        'store', 'destroy', 'update', 'show', 'index'
     ]);
-    Route::post('/groups/add-members/',[GroupController::class,'addMemberToGroup']);
+    Route::post('/groups/add-members/', [GroupController::class, 'addMemberToGroup']);
     // dùng post thay delete vì post gửi được dataform
-    Route::post('groups/remove-members',[GroupController::class,'removeMemberFromGroup']);
-    Route::get('posts/members/{postId}',[PostController::class,'showPostMember']);
-    Route::post('posts/members/delete',[PostController::class,'removePostMember']);
+    Route::post('groups/remove-members', [GroupController::class, 'removeMemberFromGroup']);
+    Route::get('posts/members/{postId}', [PostController::class, 'showPostMember']);
+    Route::post('posts/members/delete', [PostController::class, 'removePostMember']);
 
-    Route::resource('messages',GroupMessagesController::class);
+    Route::resource('messages', GroupMessagesController::class)->only([
+        'store', 'index', 'destroy'
+    ]);
 });
 
 /**
