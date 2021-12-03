@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Schedule;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -129,6 +130,68 @@ class PostController extends Controller
             return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
+        }
+    }
+
+    public function showPostMember($postId)
+    {
+        try {
+            $post = Post::find($postId);
+            if ($post->user_id == auth()->user()->id) {
+                // lấy thời khóa biểu của thằng host
+                $hostSchedules = Schedule::where([
+                    ['post_id', $postId],
+                    ['user_id', auth()->user()->id]
+                ])->get();
+
+                // lấy thời khóa biểu của mấy thằng member đăng kí vào bài post
+                $memberSchedules = $post->schedules;
+
+                $membersIds = [];
+                foreach ($memberSchedules as $schedule) {
+                    $memberId = $schedule->user->id;
+                    // kiểm tra thằng member này có trong mảng chưa, nếu có thì thêm
+                    if (!in_array($memberId, $membersIds)) {
+                        array_push($membersIds, $memberId);
+                    }
+                }
+                $result = [
+                    'post_id' => $postId,
+                    'owner_id' => auth()->user()->id,
+                    'member_ids' => $membersIds,
+                    'host_schedules' => $hostSchedules
+                ];
+                return $this->sendResponse($result, 'get data successfully');
+            } else {
+                return $this->sendError('Error', 'Access denied', 403);
+            }
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th->getMessage(), 404);
+        }
+    }
+
+    public function removePostMember(Request $request)
+    {
+        try {
+            $memberIds = $request['memberIds'];
+            $postId = $request['postId'];
+            $post = Post::find($postId);
+            $total = 0;
+            if ($post->user_id == auth()->user()->id) {
+                $memberIds = json_decode($memberIds, 1);
+                foreach ($memberIds as $memberId) {
+                    $schedules = Schedule::where([
+                        ['post_id', $postId],
+                        ['user_id', $memberId]
+                    ])->delete();
+                    $total += intval($schedules);
+                }
+                return $this->sendResponse($total, 'remove member successfully');
+            } else {
+                return $this->sendError('Error', 'Access Denied', 403);
+            }
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th->getMessage());
         }
     }
 }
