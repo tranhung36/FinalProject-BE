@@ -111,6 +111,8 @@ class GroupController extends Controller
                 "host_id" => $group->user_id,
                 "member_id" => $user->id,
                 "user_name" => $user_name,
+                "group_id" => $group->id,
+                "post_id" => $group->post_id,
                 "group_name" => $group_name,
                 'wb_id' => $group->wb_id,
                 "token" => $token->toJWT()
@@ -118,7 +120,6 @@ class GroupController extends Controller
             return $this->sendResponse($result, 'show group successfully');
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
-
         }
     }
 
@@ -149,7 +150,6 @@ class GroupController extends Controller
             } else {
                 return $this->sendError([], 'update group failed.', 403);
             }
-
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
         }

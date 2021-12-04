@@ -64,7 +64,6 @@ class GroupMessagesController extends Controller
             } else {
                 return $this->sendError('Error', 'Access denied', 403);
             }
-
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
         }

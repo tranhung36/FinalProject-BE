@@ -60,6 +60,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     ]);
     Route::resource('groups', GroupController::class)->only([
         'store', 'destroy', 'update', 'show', 'index'
+    ]);
     /**
      * Profile
      */
@@ -78,11 +79,11 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     Route::post('post/{id}/remove-members', [PostController::class, 'removePostMember']);
     Route::post('/post/{id}/create-group/', [GroupController::class, 'createGroup']);
 
-
     Route::resource('messages', GroupMessagesController::class)->only([
         'store', 'index', 'destroy'
     ]);
 });
+Route::get('messages', [GroupMessagesController::class, 'index']);
 
 /**
  * Verification Email
