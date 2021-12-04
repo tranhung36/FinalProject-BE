@@ -18,7 +18,8 @@ class TopicController extends Controller
     public function index()
     {
         try {
-            $topics = Topic::all();
+            $topics = Topic::paginate(5);
+            $topics->makeHidden('posts');
             return $this->sendResponse($topics, 'Successfully.');
         } catch (\Throwable $e) {
             return $this->sendError('Error', $e, 404);
@@ -51,10 +52,10 @@ class TopicController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
         try {
-            $topic = Topic::where('slug', $slug)->first();
+            $topic = Topic::where('id', $id)->first();
             return $this->sendResponse($topic, 'Topic retrieved successfully.');
         } catch (\Throwable $e) {
             return $this->sendError('Topic not found.', $e, 404);

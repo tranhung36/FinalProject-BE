@@ -24,7 +24,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_name',
         'email',
         'password',
-        'role'
+        'role',
+        'birthday',
+        'description',
+        'interests',
+        'gender',
+        'school',
+        'avatar'
+    ];
+
+    protected $appends = [
+        'profile_image_url'
     ];
 
     /**
@@ -51,14 +61,28 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendPasswordResetNotification($token)
     {
-        $url = 'https://final-project-team.herokuapp.com/reset-password?token=' . $token;
+        $url = 'http://localhost:3000/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));
     }
 
-    public function schedule()
+    public function schedules()
     {
-        return $this->belongsTo(Schedule::class);
+        return $this->hasMany(Schedule::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('/uploads/avatar/' . $this->avatar);
+        } else {
+            return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->first_name . ' ' . $this->last_name);
+        }
     }
 
     public function messages()

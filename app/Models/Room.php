@@ -9,12 +9,14 @@ class Room extends Model
 {
     use HasFactory;
 
-    protected $table = 'rooms';
-
-    protected $fillable = ['uuid', 'title', 'user_id'];
+    protected $fillable = ['wb_id', 'title', 'user_id', 'participants'];
 
     public function participants()
     {
-        return $this->hasMany(User::class, 'user_id', 'id');
+        return $this->hasMany(User::class);
     }
+
+    protected $casts = [
+        'participants' => 'array'
+    ];
 }

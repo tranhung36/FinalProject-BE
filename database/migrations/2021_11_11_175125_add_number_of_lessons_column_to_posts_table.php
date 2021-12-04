@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGroupUserTable extends Migration
+class AddNumberOfLessonsColumnToPostsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateGroupUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('group_user', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
-            $table->json('group_members')->nullable();
-            $table->timestamps();
+        Schema::table('posts', function (Blueprint $table) {
+            $table->integer('number_of_lessons')->default(1);
+            $table->integer('number_of_weeks')->default(1);
         });
     }
 
@@ -28,6 +26,7 @@ class CreateGroupUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_user');
+        Schema::table('posts', function (Blueprint $table) {
+        });
     }
 }

@@ -16,4 +16,18 @@ class Topic extends Model
         'name',
         'description',
     ];
+
+    protected $appends = [
+        'post_count'
+    ];
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'topic_id');
+    }
+
+    public function getPostCountAttribute()
+    {
+        return $this->posts->count();
+    }
 }

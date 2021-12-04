@@ -10,10 +10,11 @@ class Group extends Model
     use HasFactory;
 
     protected $table = 'groups';
+
     protected $fillable = [
         'name',
         'wb_id',
-        'owner_id',
+        'user_id',
         'post_id'
     ];
 
@@ -22,4 +23,8 @@ class Group extends Model
         return $this->belongsTo(Post::class, 'post_id');
     }
 
+    public function group_users()
+    {
+        return $this->hasOne(GroupUser::class);
+    }
 }

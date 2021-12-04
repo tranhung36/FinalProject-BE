@@ -18,7 +18,7 @@ class CreateGroupsTable extends Migration
             $table->string('name');
             $table->string('wb_id')->unique();
             $table->foreignId('post_id')->unique()->constrained('posts')->onDelete('cascade');
-            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

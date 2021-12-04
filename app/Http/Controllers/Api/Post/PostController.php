@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -17,13 +18,29 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function search(Request $request)
     {
         try {
-            $posts = Post::paginate(5);
-            return $this->sendResponse($posts, 'Successfully.');
+            $q = $request->input('q');
+            $topic = $request->input('topic');
+            if ($q && $topic) {
+                $posts = Post::where(function ($query) use ($topic, $q) {
+                    return $query->where([
+                        ["title", "like", "%{$q}%"],
+                        ["topic_id", $topic]
+                    ]);
+                })->orderBy('created_at', 'DESC')->paginate(5);
+            } else if ($q) {
+                $posts = Post::where("title", "like", "%{$q}%")->orderBy('created_at', 'DESC')->paginate(5);
+            } else if ($topic) {
+                $posts = Post::where('topic_id', $topic)->orderBy('created_at', 'DESC')->paginate(5);
+            } else {
+                $posts = Post::orderBy('created_at', 'DESC')->paginate(5);
+            }
+            $posts->appends(array('q' => $q, 'topic' => $topic));
+            return $this->sendResponse($posts, 'Successfully');
         } catch (\Throwable $th) {
-            return $this->sendError('Error', $th->getMessage(), 404);
+            return $this->sendError('Error', $th->getMessage(), 200);
         }
     }
 
@@ -39,15 +56,20 @@ class PostController extends Controller
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
+
+            $user = $request->user();
+
             $post = Post::create([
                 'slug' => Str::slug($request['title']),
                 'title' => $request['title'],
                 'content' => $request['content'],
-                'user_id' => auth()->user()->id,
+                'user_id' => $user->id,
                 'topic_id' => (int)$request['topic_id'],
                 'members' => (int)$request->members,
+                'number_of_lessons' => $request['number_of_lessons'],
+                'number_of_weeks' => $request['number_of_weeks'],
             ]);
-
+            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->get();
             $post->schedules = Schedule::where('post_id', $post->id)->get();
             return $this->sendResponse($post, 'Post created successfully.');
         } catch (\Throwable $th) {
@@ -61,14 +83,26 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
         try {
-            $post = Post::where('slug', $slug)->first();
-            $post->load('schedules');
+            $post = Post::where('id', $id)->first();
+            $user = User::where('id', $post->user_id)->first();
+            $post->load(['schedules' => function ($query) use ($post) {
+                $query->where('user_id', $post->user_id);
+            }]);
+            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->skip(1)->take($post->members)->get();
+            if (count($post->registered_members) <= $post->members) {
+                $post->save();
+            }
+            $post->first_name = $user->first_name;
+            $post->last_name = $user->last_name;
+            $post->avatar = $user->avatar;
+            $post->profile_image_url = $user->profile_image_url;
+            $post->makeHidden('user');
             return $this->sendResponse($post, 'Post retrieved successfully.');
         } catch (\Throwable $th) {
-            return $this->sendError('Post not found.', $th->getMessage(), 404);
+            return $this->sendError('Post not found', $th->getMessage(), 200);
         }
     }
 
@@ -79,32 +113,27 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePostRequest $request, $slug)
+    public function update(UpdatePostRequest $request, $id)
     {
         try {
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
-            $post = Post::where('slug', $slug)->first();
-            $newSlug = Str::slug($request['title']);
-
-            if ($slug != $newSlug) {
+            $post = Post::where('id', $id)->first();
+            $user = $request->user();
+            if ($post->user_id == $user->id) {
                 $post->update([
-                    'title' => $request->title,
-                    'slug' => $newSlug,
+                    'slug' => Str::slug($request['title']),
+                    'title' => $request['title'],
                     'content' => $request['content'],
-                    'user_id' => auth()->user()->id,
+                    'user_id' => $user->id,
                     'topic_id' => (int)$request->topic_id,
                     'members' => (int)$request->members,
+                    'number_of_lessons' => $request['number_of_lessons'],
+                    'number_of_weeks' => $request['number_of_weeks'],
                 ]);
             } else {
-                $post->update([
-                    'title' => $request->title,
-                    'content' => $request['content'],
-                    'user_id' => auth()->user()->id,
-                    'topic_id' => (int)$request->topic_id,
-                    'members' => (int)$request->members,
-                ]);
+                return $this->sendError('Error', 'Access Denied', 403);
             }
 
             return $this->sendResponse($post, 'Post updated successfully.');
@@ -119,10 +148,10 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
         try {
-            $post = Post::where('slug', $slug)->first();
+            $post = Post::where('id', $id)->first();
             if (auth()->user()->id == $post->user_id) {
                 $post->delete();
                 return $this->sendResponse($post, 'Post deleted successfully');
@@ -133,65 +162,26 @@ class PostController extends Controller
         }
     }
 
-    public function showPostMember($postId)
+    public function removePostMember(Request $request, $id)
     {
         try {
-            $post = Post::find($postId);
+            $memberId = $request['member_id'];
+            $post = Post::where('id', $id)->first();
             if ($post->user_id == auth()->user()->id) {
-                // lấy thời khóa biểu của thằng host
-                $hostSchedules = Schedule::where([
-                    ['post_id', $postId],
-                    ['user_id', auth()->user()->id]
-                ])->get();
-
-                // lấy thời khóa biểu của mấy thằng member đăng kí vào bài post
-                $memberSchedules = $post->schedules;
-
-                $membersIds = [];
-                foreach ($memberSchedules as $schedule) {
-                    $memberId = $schedule->user->id;
-                    // kiểm tra thằng member này có trong mảng chưa, nếu có thì thêm
-                    if (!in_array($memberId, $membersIds)) {
-                        array_push($membersIds, $memberId);
+                foreach ($post->registered_members as $member) {
+                    if ($memberId == $member['user_id']) {
+                        $schedule = Schedule::where([
+                            ['post_id', $post->id],
+                            ['user_id', $member['user_id']]
+                        ])->delete();
                     }
                 }
-                $result = [
-                    'post_id' => $postId,
-                    'owner_id' => auth()->user()->id,
-                    'member_ids' => $membersIds,
-                    'host_schedules' => $hostSchedules
-                ];
-                return $this->sendResponse($result, 'get data successfully');
             } else {
-                return $this->sendError('Error', 'Access denied', 403);
+                return $this->sendError('error', 'access denied', 403);
             }
+            return $this->sendResponse($schedule, 'remove member successfully');
         } catch (\Throwable $th) {
-            return $this->sendError('Error.', $th->getMessage(), 404);
-        }
-    }
-
-    public function removePostMember(Request $request)
-    {
-        try {
-            $memberIds = $request['memberIds'];
-            $postId = $request['postId'];
-            $post = Post::find($postId);
-            $total = 0;
-            if ($post->user_id == auth()->user()->id) {
-                $memberIds = json_decode($memberIds, 1);
-                foreach ($memberIds as $memberId) {
-                    $schedules = Schedule::where([
-                        ['post_id', $postId],
-                        ['user_id', $memberId]
-                    ])->delete();
-                    $total += intval($schedules);
-                }
-                return $this->sendResponse($total, 'remove member successfully');
-            } else {
-                return $this->sendError('Error', 'Access Denied', 403);
-            }
-        } catch (\Throwable $th) {
-            return $this->sendError('Error.', $th->getMessage());
+            return $this->sendError('error', $th->getMessage());
         }
     }
 }
