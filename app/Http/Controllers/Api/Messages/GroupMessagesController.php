@@ -17,7 +17,14 @@ class GroupMessagesController extends Controller
             $groupId = $request['group_id'];
             if ($this->checkUserInGroup(auth()->user()->id, $groupId)) {
                 $messageList = Message::where('group_id', $groupId)->orderBy('id', 'DESC')->get();
-                return $this->sendResponse($messageList, 'get messages successfully');
+                $arr = [];
+                foreach ($messageList as $item) {
+                    $message = new \stdClass();
+                    $message->message = $item;
+                    $message->message->user = $item->user;
+                    array_push($arr, $message);
+                }
+                return $this->sendResponse($arr, 'get messages successfully');
             } else {
                 return $this->sendError('Error', 'Access denied', 403);
             }

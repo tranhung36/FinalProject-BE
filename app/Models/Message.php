@@ -15,4 +15,7 @@ class Message extends Model
         'content',
         'group_id'
     ];
+    protected function user(){
+        return $this->belongsTo(User::class,'from');
+    }
 }
